@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upskilling - Bright Pitch</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .selection-screen {
+            background: white;
+            padding: 60px 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .selection-screen h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+
+        .selection-screen p {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        .role-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .role-btn {
+            padding: 20px 50px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .role-btn.owner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .role-btn.employee {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .role-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .dashboard {
+            display: none;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .dashboard.active {
+            display: block;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .navbar h1 {
+            font-size: 1.8em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            flex-grow: 1;
+            justify-content: center;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .company-switcher {
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: 2px solid white;
+            background: transparent;
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+        }
+
+        .logout-btn {
+            padding: 10px 25px;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .dashboard-content {
+            padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .subsection {
+            margin-bottom: 25px;
+        }
+
+        .subsection h3 {
+            color: #764ba2;
+            margin-bottom: 15px;
+        }
+
+        .task-input, .client-input, .teammate-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .task-input input, .client-input input, .teammate-input input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .add-btn, .delete-btn, .edit-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .add-btn {
+            background: #667eea;
+            color: white;
+        }
+
+        .delete-btn {
+            background: #f5576c;
+            color: white;
+        }
+
+        .edit-btn {
+            background: #ffa726;
+            color: white;
+        }
+
+        .add-btn:hover, .delete-btn:hover, .edit-btn:hover {
+            opacity: 0.8;
+        }
+
+        .task-list, .client-list, .teammate-list, .assignment-list {
+            list-style: none;
+        }
+
+        .task-item, .client-item, .teammate-item, .assignment-item {
+            background: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .task-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .task-text {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .task-text.completed {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .calendar-header {
+            background: #667eea;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: 600;
+            border-radius: 5px;
+        }
+
+        .calendar-day {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            min-height: 80px;
+            border: 2px solid #ddd;
+        }
+
+        .calendar-day.has-task {
+            background: #e3f2fd;
+            border-color: #667eea;
+        }
+
+        .progress-tracker {
+            margin-top: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #ddd;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .editable-content {
+            border: 2px dashed #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            min-height: 50px;
+            margin-bottom: 10px;
+            cursor: text;
+        }
+
+        .editable-content:focus {
+            outline: none;
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background: #667eea;
+            color: white;
+        }
+
+        .video-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .video-card {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #ddd;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border-color: #667eea;
+        }
+
+        .video-script-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .video-script-modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close-modal {
+            float: right;
+            font-size: 28px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .calendar {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .dashboard-content {
+                padding: 15px;
+            }
+
+            .role-buttons {
+                flex-direction: column;
+            }
+
+            .role-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Owner Dashboard -->
+    <div class="dashboard active" id="ownerDashboard">
+        <nav class="navbar">
+            <h1><a href="index.html" style="color:white; text-decoration: none;">Bright Pitch</a></h1>
+            <div class="nav-links">
+                <a href="upskill.html" class="active">🎯 Upskilling</a>
+                <a href="company.html">🏢 Company</a>
+                <a href="finance.html">💰 Finance</a>
+                <a href="college.html">🎓 College</a>
+            </div>
+            <select class="company-switcher">
+                <option>Bright Pitch</option>
+                <option>Tech Ventures</option>
+                <option>Creative Solutions</option>
+            </select>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </nav>
+
+        <div class="dashboard-content">
+            <!-- 1. Upskilling Section -->
+            <div class="section">
+                <h2>🎯 Upskilling</h2>
+                
+                <div class="subsection">
+                    <h3>Add New Task</h3>
+                    <div class="task-input">
+                        <input type="text" id="taskInput" placeholder="Enter task name">
+                        <input type="date" id="taskDate">
+                        <button class="add-btn" onclick="addTask()">Add Task</button>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <h3>Pending Tasks</h3>
+                    <ul class="task-list" id="pendingTaskList">
+                        <li class="task-item">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="task-text">Complete React.js course</span>
+                            <button class="delete-btn" onclick="deleteTask(this)">Delete</button>
+                        </li>
+                        <li class="task-item">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="task-text">Learn Node.js basics</span>
+                            <button class="delete-btn" onclick="deleteTask(this)">Delete</button>
+                        </li>
+                    </ul>
+                    <h3>Completed Tasks</h3>
+                    <ul class="task-list" id="completedTaskList">
+                        <li class="task-item">
+                            <input type="checkbox" checked onchange="toggleTask(this)">
+                            <span class="task-text completed">Watch Python tutorial</span>
+                            <button class="delete-btn" onclick="deleteTask(this)">Delete</button>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="subsection">
+                    <h3>Progress Tracker</h3>
+                    <div class="progress-tracker">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill" style="width: 33%;">33%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <h3>Task Calendar</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <button onclick="previousMonth()">Previous</button>
+                        <h4 id="currentMonth"></h4>
+                        <button onclick="nextMonth()">Next</button>
+                    </div>
+
+                    <div class="calendar" id="taskCalendar">
+                        <div class="calendar-header">Mon</div>
+                        <div class="calendar-header">Tue</div>
+                        <div class="calendar-header">Wed</div>
+                        <div class="calendar-header">Thu</div>
+                        <div class="calendar-header">Fri</div>
+                        <div class="calendar-header">Sat</div>
+                        <div class="calendar-header">Sun</div>
+                        <!-- Calendar days will be generated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function logout() {
+            // For now, just alerts. In a real app, this would redirect to a login page.
+            alert('Logged out!');
+            // You might want to redirect to index.html
+            window.location.href = 'index.html';
+        }
+
+        function addTask() {
+            const input = document.getElementById('taskInput');
+            const date = document.getElementById('taskDate');
+            if (input.value.trim()) {
+                const pendingTaskList = document.getElementById('pendingTaskList');
+                const li = document.createElement('li');
+                li.className = 'task-item';
+                li.innerHTML = `
+                    <input type="checkbox" onchange="toggleTask(this)">
+                    <span class="task-text">${input.value}</span>
+                    <button class="delete-btn" onclick="deleteTask(this)">Delete</button>
+                `;
+                pendingTaskList.appendChild(li);
+                input.value = '';
+                date.value = '';
+                updateProgress();
+            }
+        }
+
+        function toggleTask(checkbox) {
+            const taskText = checkbox.nextElementSibling;
+            const taskItem = checkbox.parentElement;
+            const pendingTaskList = document.getElementById('pendingTaskList');
+            const completedTaskList = document.getElementById('completedTaskList');
+
+            if (checkbox.checked) {
+                taskText.classList.add('completed');
+                completedTaskList.appendChild(taskItem);
+            } else {
+                taskText.classList.remove('completed');
+                pendingTaskList.appendChild(taskItem);
+            }
+            updateProgress();
+        }
+
+        function deleteTask(btn) {
+            btn.parentElement.remove();
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const tasks = document.querySelectorAll('.task-item');
+            const completed = document.querySelectorAll('.task-item input[type="checkbox"]:checked');
+            const percentage = tasks.length > 0 ? Math.round((completed.length / tasks.length) * 100) : 0;
+            const progressFill = document.getElementById('progressFill');
+            progressFill.style.width = percentage + '%';
+            progressFill.textContent = percentage + '%';
+        }
+
+        document.getElementById('taskInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addTask();
+            }
+        });
+
+        function generateCalendar() {
+            const now = new Date();
+            const year = now.getFullYear();
+
+            const calendar = document.getElementById('taskCalendar');
+            const headers = Array.from(calendar.querySelectorAll('.calendar-header'));
+            calendar.innerHTML = ''; // Clear the calendar
+            headers.forEach(header => calendar.appendChild(header)); // Add headers back
+
+            // You can add logic here for starting day of the week, etc.
+            // For simplicity, we'll just add 30 days.
+
+            let totalDays;
+            if (month == 1) {
+                totalDays = 28
+            } else if (month == 3 || month == 5 || month == 8 || month == 10) {
+                totalDays = 30
+            }
+            else {
+                totalDays = 31
+            }
+            let firstDay = new Date(year, month, 1).getDay()
+            for (let i = 0; i < firstDay; i++) {
+                const day = document.createElement('div');
+                day.className = 'calendar-day';
+                calendar.appendChild(day);
+            }
+
+            for (let i = 1; i <= totalDays; i++) {
+                const day = document.createElement('div');
+                day.className = 'calendar-day';
+                day.contentEditable = 'true';
+                day.innerHTML = `<strong>${i}</strong>`;
+                calendar.appendChild(day);
+            }
+
+            document.getElementById('currentMonth').textContent = new Date(year, month, 1).toLocaleString('default', { month: 'long' });
+
+        }
+
+        let month = new Date().getMonth()
+        function previousMonth() {
+            month--
+            if (month < 0) {
+                month = 11
+            }
+            generateCalendar()
+        }
+
+        function nextMonth() {
+            month++
+            if (month > 11) {
+                month = 0
+            }
+            generateCalendar()
+        }
+
+        // Initial call to set progress on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const now = new Date();
+
+            // Sort initial tasks into correct lists
+            const pendingTaskList = document.getElementById('pendingTaskList');
+            const completedTaskList = document.getElementById('completedTaskList');
+            const allTasks = Array.from(pendingTaskList.children).concat(Array.from(completedTaskList.children));
+
+            allTasks.forEach(taskItem => {
+                const checkbox = taskItem.querySelector('input[type="checkbox"]');
+                if (checkbox.checked) {
+                    completedTaskList.appendChild(taskItem);
+                } else {
+                    pendingTaskList.appendChild(taskItem);
+                }
+            });
+
+            updateProgress();
+            generateCalendar();
+        });
+    </script>
+</body>
+</html>

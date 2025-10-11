@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company - Bright Pitch</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .selection-screen {
+            background: white;
+            padding: 60px 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .selection-screen h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+
+        .selection-screen p {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        .role-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .role-btn {
+            padding: 20px 50px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .role-btn.owner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .role-btn.employee {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .role-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .dashboard {
+            display: none;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .dashboard.active {
+            display: block;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .navbar h1 {
+            font-size: 1.8em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            flex-grow: 1;
+            justify-content: center;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .company-switcher {
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: 2px solid white;
+            background: transparent;
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+        }
+
+        .logout-btn {
+            padding: 10px 25px;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .dashboard-content {
+            padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .subsection {
+            margin-bottom: 25px;
+        }
+
+        .subsection h3 {
+            color: #764ba2;
+            margin-bottom: 15px;
+        }
+
+        .task-input, .client-input, .teammate-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .task-input input, .client-input input, .teammate-input input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .add-btn, .delete-btn, .edit-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .add-btn {
+            background: #667eea;
+            color: white;
+        }
+
+        .delete-btn {
+            background: #f5576c;
+            color: white;
+        }
+
+        .edit-btn {
+            background: #ffa726;
+            color: white;
+        }
+
+        .add-btn:hover, .delete-btn:hover, .edit-btn:hover {
+            opacity: 0.8;
+        }
+
+        .task-list, .client-list, .teammate-list, .assignment-list {
+            list-style: none;
+        }
+
+        .task-item, .client-item, .teammate-item, .assignment-item {
+            background: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .task-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .task-text {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .task-text.completed {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .calendar-header {
+            background: #667eea;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: 600;
+            border-radius: 5px;
+        }
+
+        .calendar-day {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            min-height: 80px;
+            border: 2px solid #ddd;
+        }
+
+        .calendar-day.has-task {
+            background: #e3f2fd;
+            border-color: #667eea;
+        }
+
+        .progress-tracker {
+            margin-top: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #ddd;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .editable-content {
+            border: 2px dashed #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            min-height: 50px;
+            margin-bottom: 10px;
+            cursor: text;
+        }
+
+        .editable-content:focus {
+            outline: none;
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background: #667eea;
+            color: white;
+        }
+
+        .video-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .video-card {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #ddd;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border-color: #667eea;
+        }
+
+        .video-script-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .video-script-modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close-modal {
+            float: right;
+            font-size: 28px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .calendar {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .dashboard-content {
+                padding: 15px;
+            }
+
+            .role-buttons {
+                flex-direction: column;
+            }
+
+            .role-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Owner Dashboard -->
+    <div class="dashboard active" id="ownerDashboard">
+        <nav class="navbar">
+            <h1><a href="index.html" style="color:white; text-decoration: none;">Bright Pitch</a></h1>
+            <div class="nav-links">
+                <a href="upskill.html">🎯 Upskilling</a>
+                <a href="company.html" class="active">🏢 Company</a>
+                <a href="finance.html">💰 Finance</a>
+                <a href="college.html">🎓 College</a>
+            </div>
+            <select class="company-switcher">
+                <option>Bright Pitch</option>
+                <option>Tech Ventures</option>
+                <option>Creative Solutions</option>
+            </select>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </nav>
+
+        <div class="dashboard-content">
+            <!-- 2. Company - Bright Pitch -->
+            <div class="section">
+                <h2>🏢 Company - Bright Pitch</h2>
+                
+                <div class="subsection">
+                    <h3>Clients</h3>
+                    <div class="client-input">
+                        <input type="text" id="clientName" placeholder="Client name">
+                        <button class="add-btn" onclick="addClient()">Add Client</button>
+                    </div>
+                    <div id="clientList">
+                        <div class="client-item">
+                            <div style="flex: 1;">
+                                <h4 contenteditable="true">TechCorp Inc.</h4>
+                                <div class="editable-content" contenteditable="true">Web development project for e-commerce platform. Timeline: 3 months. Budget: $50,000.</div>
+                            </div>
+                            <button class="delete-btn" onclick="deleteClient(this)">Delete</button>
+                        </div>
+                        <div class="client-item">
+                            <div style="flex: 1;">
+                                <h4 contenteditable="true">StartUp Ventures</h4>
+                                <div class="editable-content" contenteditable="true">Mobile app development for iOS and Android. Timeline: 4 months. Budget: $75,000.</div>
+                            </div>
+                            <button class="delete-btn" onclick="deleteClient(this)">Delete</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <h3>Teammates</h3>
+                    <div class="teammate-input">
+                        <input type="text" id="teammateName" placeholder="Name">
+                        <input type="email" id="teammateEmail" placeholder="Email">
+                        <input type="text" id="teammateWork" placeholder="Assigned work">
+                        <button class="add-btn" onclick="addTeammate()">Add Teammate</button>
+                    </div>
+                    <div id="teammateList">
+                        <div class="teammate-item">
+                            <div style="flex: 1;">
+                                <strong contenteditable="true">Sarah Johnson</strong><br>
+                                <span contenteditable="true">sarah@brightpitch.com</span><br>
+                                <small contenteditable="true">Frontend Development - TechCorp Project</small>
+                            </div>
+                            <button class="delete-btn" onclick="deleteTeammate(this)">Delete</button>
+                        </div>
+                        <div class="teammate-item">
+                            <div style="flex: 1;">
+                                <strong contenteditable="true">Michael Chen</strong><br>
+                                <span contenteditable="true">michael@brightpitch.com</span><br>
+                                <small contenteditable="true">Backend Development - StartUp Ventures</small>
+                            </div>
+                            <button class="delete-btn" onclick="deleteTeammate(this)">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learn Section -->
+            <div class="section">
+                <h2>📚 Learn</h2>
+                
+                <div class="subsection">
+                    <h3>College Collaborators</h3>
+                    <div class="editable-content" contenteditable="true">
+                        <strong>MIT Innovation Lab</strong> - Partnership for AI research projects<br>
+                        <strong>Stanford Business School</strong> - Startup mentorship program<br>
+                        <strong>Harvard Tech Club</strong> - Joint hackathon events
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <h3>Events Calendar</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Event</th>
+                                <th>Date</th>
+                                <th>Location</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td contenteditable="true">Tech Innovation Summit</td>
+                                <td contenteditable="true">2025-10-20</td>
+                                <td contenteditable="true">San Francisco</td>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true">AI Workshop Series</td>
+                                <td contenteditable="true">2025-11-05</td>
+                                <td contenteditable="true">Virtual</td>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true">Startup Networking Mixer</td>
+                                <td contenteditable="true">2025-11-15</td>
+                                <td contenteditable="true">Boston</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="subsection">
+                    <h3>Content Creation - YouTube Videos</h3>
+                    <div class="video-list">
+                        <div class="video-card" onclick="openVideoScript('How to Build a Startup', 'Introduction to building a successful startup...\n\n1. Identify a problem\n2. Create a solution\n3. Build your team\n4. Find investors\n5. Scale your business')">
+                            <strong>How to Build a Startup</strong>
+                        </div>
+                        <div class="video-card" onclick="openVideoScript('Marketing 101', 'Essential marketing strategies...\n\n- Social media marketing\n- Content marketing\n- Email campaigns\n- SEO optimization\n- Paid advertising')">
+                            <strong>Marketing 101</strong>
+                        </div>
+                        <div class="video-card" onclick="openVideoScript('Web Development Basics', 'Learn the fundamentals...\n\n- HTML & CSS\n- JavaScript essentials\n- Responsive design\n- Best practices\n- Deployment tips')">
+                            <strong>Web Development Basics</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Script Modal -->
+    <div class="video-script-modal" id="videoModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeVideoScript()">&times;</span>
+            <h2 id="videoTitle">Video Title</h2>
+            <div class="editable-content" contenteditable="true" id="videoScript" style="min-height: 300px;">
+                Video script content goes here...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentVideoTitle = '';
+        let currentVideoScript = '';
+
+        function logout() {
+            // For now, just alerts. In a real app, this would redirect to a login page.
+            alert('Logged out!');
+            // You might want to redirect to index.html
+            window.location.href = 'index.html';
+        }
+
+        function addClient() {
+            const input = document.getElementById('clientName');
+            if (input.value.trim()) {
+                const clientList = document.getElementById('clientList');
+                const div = document.createElement('div');
+                div.className = 'client-item';
+                div.innerHTML = `
+                    <div style="flex: 1;">
+                        <h4 contenteditable="true">${input.value}</h4>
+                        <div class="editable-content" contenteditable="true">Add client details here...</div>
+                    </div>
+                    <button class="delete-btn" onclick="deleteClient(this)">Delete</button>
+                `;
+                clientList.appendChild(div);
+                input.value = '';
+            }
+        }
+
+        function deleteClient(btn) {
+            btn.parentElement.remove();
+        }
+
+        function addTeammate() {
+            const name = document.getElementById('teammateName');
+            const email = document.getElementById('teammateEmail');
+            const work = document.getElementById('teammateWork');
+            if (name.value.trim() && email.value.trim()) {
+                const teammateList = document.getElementById('teammateList');
+                const div = document.createElement('div');
+                div.className = 'teammate-item';
+                div.innerHTML = `
+                    <div style="flex: 1;">
+                        <strong contenteditable="true">${name.value}</strong><br>
+                        <span contenteditable="true">${email.value}</span><br>
+                        <small contenteditable="true">${work.value}</small>
+                    </div>
+                    <button class="delete-btn" onclick="deleteTeammate(this)">Delete</button>
+                `;
+                teammateList.appendChild(div);
+                name.value = '';
+                email.value = '';
+                work.value = '';
+            }
+        }
+
+        function deleteTeammate(btn) {
+            btn.parentElement.remove();
+        }
+
+        function openVideoScript(title, script) {
+            currentVideoTitle = title;
+            currentVideoScript = script;
+            document.getElementById('videoTitle').textContent = title;
+            document.getElementById('videoScript').textContent = script;
+            document.getElementById('videoModal').classList.add('active');
+        }
+
+        function closeVideoScript() {
+            document.getElementById('videoModal').classList.remove('active');
+        }
+
+        document.getElementById('videoModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeVideoScript();
+            }
+        });
+
+        document.getElementById('clientName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addClient();
+            }
+        });
+    </script>
+</body>
+</html>
