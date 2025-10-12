@@ -457,6 +457,38 @@
             color: #666;
         }
 
+        .task-category {
+            margin-bottom: 15px;
+        }
+
+        .accordion-toggle {
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .accordion-toggle .arrow {
+            transition: transform 0.3s ease;
+            font-size: 1.2em;
+        }
+
+        .accordion-toggle.active .arrow {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+
+        /* A class to show the content when active */
+        .accordion-content.active {
+            max-height: 1000px; /* Adjust as needed for content */
+        }
+
+
         @media (max-width: 768px) {
             .navbar {
                 flex-direction: column;
@@ -537,27 +569,35 @@
                 </div>
 
                 <div class="subsection">
-                    <h3>Pending Tasks</h3>
-                    <ul class="task-list" id="pendingTaskList">
-                        <li class="task-item">
-                            <input type="checkbox">
-                            <span class="task-text">Complete React.js course</span>
-                            <button class="delete-btn">Delete</button>
-                        </li>
-                        <li class="task-item">
-                            <input type="checkbox">
-                            <span class="task-text">Learn Node.js basics</span>
-                            <button class="delete-btn">Delete</button>
-                        </li>
-                    </ul>
-                    <h3>Completed Tasks</h3>
-                    <ul class="task-list" id="completedTaskList">
-                        <li class="task-item">
-                            <input type="checkbox" checked>
-                            <span class="task-text completed">Watch Python tutorial</span>
-                            <button class="delete-btn">Delete</button>
-                        </li>
-                    </ul>
+                    <div class="task-category">
+                        <h3 class="accordion-toggle">Pending Tasks <span class="arrow">▼</span></h3>
+                        <ul class="task-list accordion-content" id="pendingTaskList">
+                            <li class="task-item">
+                                <input type="checkbox">
+                                <span class="task-text">Complete React.js course</span>
+                                <button class="delete-btn">Delete</button>
+                            </li>
+                            <li class="task-item">
+                                <input type="checkbox">
+                                <span class="task-text">Learn Node.js basics</span>
+                                <button class="delete-btn">Delete</button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="task-category">
+                        <h3 class="accordion-toggle">Completed Tasks <span class="arrow">▼</span></h3>
+                        <ul class="task-list accordion-content" id="completedTaskList">
+                            <li class="task-item">
+                                <input type="checkbox" checked>
+                                <span class="task-text completed">Watch Python tutorial</span>
+                                <button class="delete-btn">Delete</button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="task-category">
+                        <h3 class="accordion-toggle">Upcoming Tasks <span class="arrow">▼</span></h3>
+                        <ul class="task-list accordion-content" id="upcomingTaskList"></ul>
+                    </div>
                 </div>
 
                 <div class="subsection">
