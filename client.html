@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Bright Pitch</title>
+    <title>Client Details - Bright Pitch</title>
     <style>
         * {
             margin: 0;
@@ -13,12 +13,8 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f5f5f5;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
         }
 
         .selection-screen {
@@ -101,6 +97,26 @@
 
         .navbar h1 {
             font-size: 1.8em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            flex-grow: 1;
+            justify-content: center;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background-color: rgba(255, 255, 255, 0.2);
         }
 
         .company-switcher {
@@ -374,6 +390,28 @@
             color: #666;
         }
 
+        .detail-field {
+            margin-bottom: 20px;
+        }
+        .detail-field label {
+            display: block;
+            font-weight: bold;
+            color: #764ba2;
+            margin-bottom: 5px;
+        }
+        .detail-field [contenteditable="true"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .detail-field [contenteditable="true"]:focus {
+            outline: none;
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
         @media (max-width: 768px) {
             .navbar {
                 flex-direction: column;
@@ -396,35 +434,67 @@
                 width: 100%;
             }
 
-            .selection-screen {
-                padding: 40px 20px;
-                box-shadow: none;
-                border-radius: 0;
+            .task-input, .client-input, .teammate-input {
+                flex-direction: column;
             }
 
-            .selection-screen h1 {
-                font-size: 2em;
+            .nav-links {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Selection Screen -->
-    <div class="selection-screen" id="selectionScreen">
-        <h1>Welcome to Bright Pitch</h1>
-        <p>Please select your role to continue</p>
-        <div class="role-buttons">
-            <button class="role-btn owner" onclick="selectRole('owner')">Owner</button>
-            <button class="role-btn employee" onclick="selectRole('employee')">Employee</button>
+    <div class="dashboard active">
+        <nav class="navbar">
+            <h1><a href="index.html" style="color:white; text-decoration: none;">Bright Pitch</a></h1>
+            <div class="nav-links">
+                <a href="upskill.html">🎯 Upskilling</a>
+                <a href="company.html" class="active">🏢 Company</a>
+                <a href="finance.html">💰 Finance</a>
+                <a href="college.html">🎓 College</a>
+            </div>
+            <select class="company-switcher">
+                <option>Bright Pitch</option>
+                <option>Tech Ventures</option>
+                <option>Creative Solutions</option>
+            </select>
+            <button class="logout-btn">Logout</button>
+        </nav>
+
+        <div class="dashboard-content">
+            <div class="section">
+                <h2 id="clientNameHeader">Client Details</h2>
+                
+                <div class="subsection">
+                    <div class="detail-field">
+                        <label for="clientName">Client Name</label>
+                        <div id="clientName" contenteditable="true" data-field="name"></div>
+                    </div>
+                    <div class="detail-field">
+                        <label for="clientProject">Project Details</label>
+                        <div id="clientProject" contenteditable="true" data-field="project"></div>
+                    </div>
+                    <div class="detail-field">
+                        <label for="clientBudget">Budget</label>
+                        <div id="clientBudget" contenteditable="true" data-field="budget"></div>
+                    </div>
+                    <div class="detail-field">
+                        <label for="clientContact">Contact Person</label>
+                        <div id="clientContact" contenteditable="true" data-field="contact"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Owner Dashboard -->
-    <div class="dashboard" id="ownerDashboard"></div>
-
-    <!-- Video Script Modal -->
-    <div class="video-script-modal" id="videoModal"></div>
-
-    <script type="module" src="index.js"></script>
+    <script type="module" src="client.js"></script>
 </body>
 </html>

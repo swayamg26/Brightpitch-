@@ -278,6 +278,73 @@
             border-color: #667eea;
         }
 
+        #newTaskModal {
+            display: none;
+            z-index: 20;
+            padding: 25px;
+            background-color: #e8f4fa;
+            box-shadow: 0px 0px 3px black;
+            border-radius: 5px;
+            width: 350px;
+            top: 100px;
+            left: calc(50% - 175px);
+            position: absolute;
+        }
+        #newTaskModal h2 { color: #3a87ad; }
+        #newTaskModal button {
+            background-color: #3a87ad;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #newTaskModal input, #newTaskModal textarea, #newTaskModal select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+        }
+        #modalBackDrop {
+            display: none;
+            top: 0px;
+            left: 0px;
+            z-index: 10;
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            background-color: rgba(0,0,0,0.8);
+        }
+
+        .calendar-task {
+            background-color: #5bc0de;
+            color: white;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 0.8em;
+            margin-top: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .calendar-task.pending { background-color: #f0ad4e; }
+        .calendar-task.completed { background-color: #5cb85c; }
+        .calendar-task.upcoming { background-color: #5bc0de; }
+
+        .calendar-day#currentDay {
+            background-color: #e8f4fa;
+        }
+
+        .calendar-day.padding {
+            cursor: default !important;
+            background-color: #f9f9f9 !important;
+            box-shadow: none !important;
+        }
+        .calendar-day:hover {
+            background-color: #e8f4fa;
+        }
+
         .progress-tracker {
             margin-top: 20px;
         }
@@ -411,6 +478,27 @@
             .role-btn {
                 width: 100%;
             }
+
+            .task-input, .client-input, .teammate-input {
+                flex-direction: column;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            #newTaskModal {
+                width: 90%;
+                left: 5%;
+                top: 50px;
+            }
         }
     </style>
 </head>
@@ -424,13 +512,14 @@
                 <a href="company.html">🏢 Company</a>
                 <a href="finance.html">💰 Finance</a>
                 <a href="college.html">🎓 College</a>
+                <a href="learnapart.html">📚 Learn</a>
             </div>
             <select class="company-switcher">
                 <option>Bright Pitch</option>
                 <option>Tech Ventures</option>
                 <option>Creative Solutions</option>
             </select>
-            <button class="logout-btn" onclick="logout()">Logout</button>
+            <button class="logout-btn">Logout</button>
         </nav>
 
         <div class="dashboard-content">
@@ -443,7 +532,7 @@
                     <div class="task-input">
                         <input type="text" id="taskInput" placeholder="Enter task name">
                         <input type="date" id="taskDate">
-                        <button class="add-btn" onclick="addTask()">Add Task</button>
+                        <button class="add-btn">Add Task</button>
                     </div>
                 </div>
 
@@ -451,22 +540,22 @@
                     <h3>Pending Tasks</h3>
                     <ul class="task-list" id="pendingTaskList">
                         <li class="task-item">
-                            <input type="checkbox" onchange="toggleTask(this)">
+                            <input type="checkbox">
                             <span class="task-text">Complete React.js course</span>
-                            <button class="delete-btn" onclick="deleteTask(this)">Delete</button>
+                            <button class="delete-btn">Delete</button>
                         </li>
                         <li class="task-item">
-                            <input type="checkbox" onchange="toggleTask(this)">
+                            <input type="checkbox">
                             <span class="task-text">Learn Node.js basics</span>
-                            <button class="delete-btn" onclick="deleteTask(this)">Delete</button>
+                            <button class="delete-btn">Delete</button>
                         </li>
                     </ul>
                     <h3>Completed Tasks</h3>
                     <ul class="task-list" id="completedTaskList">
                         <li class="task-item">
-                            <input type="checkbox" checked onchange="toggleTask(this)">
+                            <input type="checkbox" checked>
                             <span class="task-text completed">Watch Python tutorial</span>
-                            <button class="delete-btn" onclick="deleteTask(this)">Delete</button>
+                            <button class="delete-btn">Delete</button>
                         </li>
                     </ul>
                 </div>
@@ -483,19 +572,12 @@
                 <div class="subsection">
                     <h3>Task Calendar</h3>
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <button onclick="previousMonth()">Previous</button>
+                        <button id="backButton">Previous</button>
                         <h4 id="currentMonth"></h4>
-                        <button onclick="nextMonth()">Next</button>
+                        <button id="nextButton">Next</button>
                     </div>
 
                     <div class="calendar" id="taskCalendar">
-                        <div class="calendar-header">Mon</div>
-                        <div class="calendar-header">Tue</div>
-                        <div class="calendar-header">Wed</div>
-                        <div class="calendar-header">Thu</div>
-                        <div class="calendar-header">Fri</div>
-                        <div class="calendar-header">Sat</div>
-                        <div class="calendar-header">Sun</div>
                         <!-- Calendar days will be generated by JavaScript -->
                     </div>
                 </div>
@@ -503,147 +585,22 @@
         </div>
     </div>
 
-    <script>
-        function logout() {
-            // For now, just alerts. In a real app, this would redirect to a login page.
-            alert('Logged out!');
-            // You might want to redirect to index.html
-            window.location.href = 'index.html';
-        }
+    <div id="newTaskModal">
+        <h2>New Task</h2>
+        <input id="taskTitleInput" placeholder="Task Title" />
+        <textarea id="taskDescInput" placeholder="Task Description"></textarea>
+        <select id="taskStatusSelect">
+            <option value="pending">Pending</option>
+            <option value="completed">Completed</option>
+            <option value="upcoming">Upcoming</option>
+        </select>
+        <button id="saveButton">Save</button>
+        <button id="cancelButton">Cancel</button>
+    </div>
 
-        function addTask() {
-            const input = document.getElementById('taskInput');
-            const date = document.getElementById('taskDate');
-            if (input.value.trim()) {
-                const pendingTaskList = document.getElementById('pendingTaskList');
-                const li = document.createElement('li');
-                li.className = 'task-item';
-                li.innerHTML = `
-                    <input type="checkbox" onchange="toggleTask(this)">
-                    <span class="task-text">${input.value}</span>
-                    <button class="delete-btn" onclick="deleteTask(this)">Delete</button>
-                `;
-                pendingTaskList.appendChild(li);
-                input.value = '';
-                date.value = '';
-                updateProgress();
-            }
-        }
+    <div id="modalBackDrop"></div>
 
-        function toggleTask(checkbox) {
-            const taskText = checkbox.nextElementSibling;
-            const taskItem = checkbox.parentElement;
-            const pendingTaskList = document.getElementById('pendingTaskList');
-            const completedTaskList = document.getElementById('completedTaskList');
-
-            if (checkbox.checked) {
-                taskText.classList.add('completed');
-                completedTaskList.appendChild(taskItem);
-            } else {
-                taskText.classList.remove('completed');
-                pendingTaskList.appendChild(taskItem);
-            }
-            updateProgress();
-        }
-
-        function deleteTask(btn) {
-            btn.parentElement.remove();
-            updateProgress();
-        }
-
-        function updateProgress() {
-            const tasks = document.querySelectorAll('.task-item');
-            const completed = document.querySelectorAll('.task-item input[type="checkbox"]:checked');
-            const percentage = tasks.length > 0 ? Math.round((completed.length / tasks.length) * 100) : 0;
-            const progressFill = document.getElementById('progressFill');
-            progressFill.style.width = percentage + '%';
-            progressFill.textContent = percentage + '%';
-        }
-
-        document.getElementById('taskInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                addTask();
-            }
-        });
-
-        function generateCalendar() {
-            const now = new Date();
-            const year = now.getFullYear();
-
-            const calendar = document.getElementById('taskCalendar');
-            const headers = Array.from(calendar.querySelectorAll('.calendar-header'));
-            calendar.innerHTML = ''; // Clear the calendar
-            headers.forEach(header => calendar.appendChild(header)); // Add headers back
-
-            // You can add logic here for starting day of the week, etc.
-            // For simplicity, we'll just add 30 days.
-
-            let totalDays;
-            if (month == 1) {
-                totalDays = 28
-            } else if (month == 3 || month == 5 || month == 8 || month == 10) {
-                totalDays = 30
-            }
-            else {
-                totalDays = 31
-            }
-            let firstDay = new Date(year, month, 1).getDay()
-            for (let i = 0; i < firstDay; i++) {
-                const day = document.createElement('div');
-                day.className = 'calendar-day';
-                calendar.appendChild(day);
-            }
-
-            for (let i = 1; i <= totalDays; i++) {
-                const day = document.createElement('div');
-                day.className = 'calendar-day';
-                day.contentEditable = 'true';
-                day.innerHTML = `<strong>${i}</strong>`;
-                calendar.appendChild(day);
-            }
-
-            document.getElementById('currentMonth').textContent = new Date(year, month, 1).toLocaleString('default', { month: 'long' });
-
-        }
-
-        let month = new Date().getMonth()
-        function previousMonth() {
-            month--
-            if (month < 0) {
-                month = 11
-            }
-            generateCalendar()
-        }
-
-        function nextMonth() {
-            month++
-            if (month > 11) {
-                month = 0
-            }
-            generateCalendar()
-        }
-
-        // Initial call to set progress on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            const now = new Date();
-
-            // Sort initial tasks into correct lists
-            const pendingTaskList = document.getElementById('pendingTaskList');
-            const completedTaskList = document.getElementById('completedTaskList');
-            const allTasks = Array.from(pendingTaskList.children).concat(Array.from(completedTaskList.children));
-
-            allTasks.forEach(taskItem => {
-                const checkbox = taskItem.querySelector('input[type="checkbox"]');
-                if (checkbox.checked) {
-                    completedTaskList.appendChild(taskItem);
-                } else {
-                    pendingTaskList.appendChild(taskItem);
-                }
-            });
-
-            updateProgress();
-            generateCalendar();
-        });
-    </script>
+    <script type="module" src="upskill.js"></script>
+    <script type="module" src="calendar.js"></script>
 </body>
 </html>

@@ -316,6 +316,77 @@
             background: #f0f4ff;
         }
 
+        .finance-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .finance-form input, .finance-form select {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            min-width: 150px;
+        }
+
+        .finance-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .entry-box {
+            background: #f9f9f9;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #eee;
+        }
+        .entry-header {
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+        }
+        .entry-details {
+            padding: 0 15px 15px 15px;
+            border-top: 1px solid #eee;
+            display: none; /* Hidden by default */
+        }
+        .finance-summary {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            background: #eef2ff;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .payment-box {
+            background: #f9f9f9;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #eee;
+        }
+        .payment-header {
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+        }
+        .payment-details {
+            padding: 0 15px 15px 15px;
+            border-top: 1px solid #eee;
+            display: none; /* Hidden by default */
+        }
+        .payment-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -411,6 +482,29 @@
             .role-btn {
                 width: 100%;
             }
+
+            .task-input, .client-input, .teammate-input {
+                flex-direction: column;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            .finance-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .payment-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -424,13 +518,14 @@
                 <a href="company.html">🏢 Company</a>
                 <a href="finance.html" class="active">💰 Finance</a>
                 <a href="college.html">🎓 College</a>
+                <a href="learnapart.html">📚 Learn</a>
             </div>
             <select class="company-switcher">
                 <option>Bright Pitch</option>
                 <option>Tech Ventures</option>
                 <option>Creative Solutions</option>
             </select>
-            <button class="logout-btn" onclick="logout()">Logout</button>
+            <button class="logout-btn">Logout</button>
         </nav>
 
         <div class="dashboard-content">
@@ -438,86 +533,71 @@
             <div class="section">
                 <h2>💰 Financial Analysis</h2>
                 
-                <div class="subsection">
-                    <h3>Client Payments</h3>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Client</th>
-                                <th>Amount</th>
-                                <th>Due Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td contenteditable="true">TechCorp Inc.</td>
-                                <td contenteditable="true">$25,000</td>
-                                <td contenteditable="true">2025-10-15</td>
-                            </tr>
-                            <tr>
-                                <td contenteditable="true">StartUp Ventures</td>
-                                <td contenteditable="true">$35,000</td>
-                                <td contenteditable="true">2025-10-30</td>
-                            </tr>
-                            <tr>
-                                <td contenteditable="true">Digital Solutions</td>
-                                <td contenteditable="true">$15,000</td>
-                                <td contenteditable="true">2025-11-10</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="subsection finance-form">
+                    <input type="text" id="entryDescription" placeholder="Description">
+                    <input type="number" id="entryAmount" placeholder="Amount">
+                    <input type="date" id="entryDate">
+                    <select id="entryType">
+                        <option value="income">Income</option>
+                        <option value="expense">Expense</option>
+                    </select>
+                    <button id="addEntryBtn" class="add-btn">Add Entry</button>
                 </div>
 
-                <div class="subsection">
-                    <h3>Income & Expenses</h3>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Category</th>
-                                <th>Amount</th>
-                                <th>Month</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td contenteditable="true">Total Income</td>
-                                <td contenteditable="true" style="color: green;">$120,000</td>
-                                <td contenteditable="true">October 2025</td>
-                            </tr>
-                            <tr>
-                                <td contenteditable="true">Salaries</td>
-                                <td contenteditable="true" style="color: red;">$45,000</td>
-                                <td contenteditable="true">October 2025</td>
-                            </tr>
-                            <tr>
-                                <td contenteditable="true">Office Rent</td>
-                                <td contenteditable="true" style="color: red;">$8,000</td>
-                                <td contenteditable="true">October 2025</td>
-                            </tr>
-                            <tr>
-                                <td contenteditable="true">Software & Tools</td>
-                                <td contenteditable="true" style="color: red;">$3,500</td>
-                                <td contenteditable="true">October 2025</td>
-                            </tr>
-                            <tr>
-                                <td contenteditable="true"><strong>Net Profit</strong></td>
-                                <td contenteditable="true" style="color: green;"><strong>$63,500</strong></td>
-                                <td contenteditable="true">October 2025</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="finance-summary">
+                    <div>
+                        <h3>Total Income</h3>
+                        <p id="totalIncome" style="color: green; font-weight: bold;">$0.00</p>
+                    </div>
+                    <div>
+                        <h3>Total Expenses</h3>
+                        <p id="totalExpenses" style="color: red; font-weight: bold;">$0.00</p>
+                    </div>
+                    <div>
+                        <h3>Balance</h3>
+                        <p id="balance" style="font-weight: bold;">$0.00</p>
+                    </div>
+                </div>
+
+                <div class="finance-grid">
+                    <div class="subsection">
+                        <h3>Income</h3>
+                        <div id="incomeEntries"></div>
+                    </div>
+                    <div class="subsection">
+                        <h3>Expenses</h3>
+                        <div id="expenseEntries"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Client Payments</h2>
+                <div class="subsection finance-form">
+                    <input type="text" id="paymentClientName" placeholder="Client Name">
+                    <input type="number" id="paymentAmount" placeholder="Amount">
+                    <input type="date" id="paymentDueDate">
+                    <select id="paymentStatus">
+                        <option value="pending">Pending</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                    <button id="addPaymentBtn" class="add-btn">Add Payment</button>
+                </div>
+
+                <div class="payment-grid">
+                    <div class="subsection">
+                        <h3>Pending Payments</h3>
+                        <div id="pendingPayments"></div>
+                    </div>
+                    <div class="subsection">
+                        <h3>Completed Payments</h3>
+                        <div id="completedPayments"></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
-        function logout() {
-            // For now, just alerts. In a real app, this would redirect to a login page.
-            alert('Logged out!');
-            // You might want to redirect to index.html
-            window.location.href = 'index.html';
-        }
-    </script>
+    <script type="module" src="finance.js"></script>
 </body>
 </html>
