@@ -13,8 +13,9 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f5f5;
+            background: #000000;
             min-height: 100vh;
+            color: #e0e0e0;
         }
 
         .selection-screen {
@@ -75,7 +76,7 @@
 
         .dashboard {
             display: none;
-            background: #f5f5f5;
+            background: #000000;
             min-height: 100vh;
         }
 
@@ -151,11 +152,12 @@
         }
 
         .section {
-            background: white;
+            background: #000000;
             border-radius: 15px;
             padding: 25px;
             margin-bottom: 30px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border: 1px solid #222;
         }
 
         .section h2 {
@@ -185,9 +187,11 @@
             flex: 1;
             min-width: 200px;
             padding: 10px;
-            border: 2px solid #ddd;
+            border: 1px solid #555;
             border-radius: 5px;
             font-size: 1em;
+            background-color: #3a3a3a;
+            color: #e0e0e0;
         }
 
         .add-btn, .delete-btn, .edit-btn {
@@ -200,7 +204,7 @@
         }
 
         .add-btn {
-            background: #667eea;
+            background: orange;
             color: white;
         }
 
@@ -223,7 +227,7 @@
         }
 
         .task-item, .client-item, .teammate-item, .assignment-item {
-            background: #f9f9f9;
+            background: #2a2a2a;
             padding: 15px;
             margin-bottom: 10px;
             border-radius: 8px;
@@ -266,15 +270,15 @@
         }
 
         .calendar-day {
-            background: #f9f9f9;
+            background: #2a2a2a;
             padding: 15px;
             border-radius: 5px;
             min-height: 80px;
-            border: 2px solid #ddd;
+            border: 1px solid #444;
         }
 
         .calendar-day.has-task {
-            background: #e3f2fd;
+            background: #3a3a3a;
             border-color: #667eea;
         }
 
@@ -308,7 +312,7 @@
             display: none;
             z-index: 20;
             padding: 25px;
-            background-color: #e8f4fa;
+            background-color: #2c2c2c;
             box-shadow: 0px 0px 3px black;
             border-radius: 5px;
             width: 350px;
@@ -316,9 +320,9 @@
             left: calc(50% - 175px);
             position: absolute;
         }
-        #newAssignmentModal h2 { color: #3a87ad; }
+        #newAssignmentModal h2 { color: #5bc0de; }
         #newAssignmentModal button {
-            background-color: #3a87ad;
+            background-color: orange;
             color: white;
             border: none;
             padding: 5px 10px;
@@ -330,7 +334,9 @@
             padding: 8px;
             margin-bottom: 10px;
             border-radius: 3px;
-            border: 1px solid #ccc;
+            border: 1px solid #555;
+            background-color: #3a3a3a;
+            color: #e0e0e0;
         }
         #modalBackDrop {
             display: none;
@@ -360,16 +366,16 @@
         .calendar-task.exam { background-color: #d9534f; }
 
         .calendar-day#currentDay {
-            background-color: #e8f4fa;
+            background-color: #444;
         }
 
         .calendar-day.padding {
             cursor: default !important;
-            background-color: #f9f9f9 !important;
+            background-color: #1a1a1a !important;
             box-shadow: none !important;
         }
         .calendar-day:hover {
-            background-color: #e8f4fa;
+            background-color: #3a3a3a;
         }
 
         .progress-tracker {

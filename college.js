@@ -154,7 +154,7 @@ function loadAssignmentLists() {
             pendingList.appendChild(assignmentItem);
         } else if (a.status === 'completed') {
             completedList.appendChild(assignmentItem);
-        } else if (a.satus === 'upcoming') {
+        } else if (a.status === 'upcoming') {
             upcomingList.appendChild(assignmentItem);
         }
     });

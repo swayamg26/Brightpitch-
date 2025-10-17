@@ -13,7 +13,8 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f5f5;
+            background: #000000;
+            color: #fdf9f9; /* Set default text color to light gray for dark background */
             min-height: 100vh;
         }
 
@@ -75,7 +76,7 @@
 
         .dashboard {
             display: none;
-            background: #f5f5f5;
+            background: #000000;
             min-height: 100vh;
         }
 
@@ -93,6 +94,10 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             flex-wrap: wrap;
             gap: 15px;
+            position: sticky;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
         }
 
         .navbar h1 {
@@ -130,7 +135,7 @@
         }
 
         .logout-btn {
-            padding: 10px 25px;
+            padding: 10px 25px; 
             background: white;
             color: #667eea;
             border: none;
@@ -151,11 +156,13 @@
         }
 
         .section {
-            background: white;
+            background: #000000; /* Black background for content cards */
             border-radius: 15px;
             padding: 25px;
             margin-bottom: 30px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border: 1px solid #222; /* Add a border for separation */
+            transition: all 0.3s ease;
         }
 
         .section h2 {
@@ -163,6 +170,11 @@
             margin-bottom: 20px;
             padding-bottom: 10px;
             border-bottom: 3px solid #667eea;
+        }
+
+        .section:hover { /* Subtle hover effect */
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
         }
 
         .subsection {
@@ -200,7 +212,7 @@
         }
 
         .add-btn {
-            background: #667eea;
+            background: orange;
             color: white;
         }
 
@@ -214,6 +226,11 @@
             color: white;
         }
 
+        .edit-btn {
+            background: #f0ad4e; /* A distinct color for edit */
+            color: white;
+        }
+
         .add-btn:hover, .delete-btn:hover, .edit-btn:hover {
             opacity: 0.8;
         }
@@ -223,7 +240,7 @@
         }
 
         .task-item, .client-item, .teammate-item, .assignment-item {
-            background: #f9f9f9;
+            background: #2a2a2a; /* Darker background for list items */
             padding: 15px;
             margin-bottom: 10px;
             border-radius: 8px;
@@ -249,6 +266,12 @@
             opacity: 0.6;
         }
 
+        .task-description {
+            font-size: 0.9em;
+            color: #aaa; /* Lighter gray for description text */
+            margin-left: 30px; /* Align with task text */
+        }
+
         .calendar {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -266,23 +289,24 @@
         }
 
         .calendar-day {
-            background: #f9f9f9;
-            padding: 15px;
-            border-radius: 5px;
-            min-height: 80px;
-            border: 2px solid #ddd;
+            background: #2a2a2a; /* Dark background for calendar days */
+            padding: 10px;
+            min-height: 100px;
+            border-right: 1px solid #e0e0e0;
+            border-bottom: 1px solid #e0e0e0;
+            position: relative;
+            transition: background-color 0.2s ease;
         }
 
         .calendar-day.has-task {
-            background: #e3f2fd;
-            border-color: #667eea;
+            /* We will rely on task colors instead of changing day background */
         }
 
         #newTaskModal {
             display: none;
             z-index: 20;
             padding: 25px;
-            background-color: #e8f4fa;
+            background-color: #2c2c2c; /* Dark modal background */
             box-shadow: 0px 0px 3px black;
             border-radius: 5px;
             width: 350px;
@@ -290,9 +314,9 @@
             left: calc(50% - 175px);
             position: absolute;
         }
-        #newTaskModal h2 { color: #3a87ad; }
+        #newTaskModal h2 { color: #5bc0de; } /* Lighter heading color for modal */
         #newTaskModal button {
-            background-color: #3a87ad;
+            background-color: orange;
             color: white;
             border: none;
             padding: 5px 10px;
@@ -304,7 +328,9 @@
             padding: 8px;
             margin-bottom: 10px;
             border-radius: 3px;
-            border: 1px solid #ccc;
+            border: 1px solid #555;
+            background-color: #3a3a3a;
+            color: #e0e0e0;
         }
         #modalBackDrop {
             display: none;
@@ -317,32 +343,80 @@
             background-color: rgba(0,0,0,0.8);
         }
 
-        .calendar-task {
-            background-color: #5bc0de;
-            color: white;
-            padding: 2px 5px;
-            border-radius: 3px;
-            font-size: 0.8em;
+        :root {
+            --event-pending: #f0ad4e;
+            --event-completed: #5cb85c;
+            --event-upcoming: #5bc0de;
+        }
+
+        .calendar-events {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
             margin-top: 5px;
+        }
+
+        .event-indicator {
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            padding: 2px 5px;
+            color: white;
+            font-size: 0.8em;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            width: 100%;
         }
-        .calendar-task.pending { background-color: #f0ad4e; }
-        .calendar-task.completed { background-color: #5cb85c; }
-        .calendar-task.upcoming { background-color: #5bc0de; }
+
+        /* Use attribute selector to apply color from CSS variable */
+        .event-indicator[data-status="pending"] { background-color: var(--event-pending); }
+        .event-indicator[data-status="completed"] { background-color: var(--event-completed); }
+        .event-indicator[data-status="upcoming"] { background-color: var(--event-upcoming); }
+
+        .event-popup {
+            display: none;
+            position: absolute;
+            bottom: 150%; /* Position above the indicator */
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 100;
+            width: 200px;
+            font-size: 0.9em;
+            white-space: normal;
+        }
+
+        .event-indicator:hover .event-popup {
+            display: block;
+        }
+
+        .event-popup::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
 
         .calendar-day#currentDay {
-            background-color: #e8f4fa;
+            background-color: #444; /* Distinct dark color for the current day */
         }
 
         .calendar-day.padding {
             cursor: default !important;
-            background-color: #f9f9f9 !important;
+            background-color: #1a1a1a !important; /* Even darker for padding days */
             box-shadow: none !important;
         }
         .calendar-day:hover {
-            background-color: #e8f4fa;
+            background-color: #3a3a3a; /* Hover effect for calendar days */
         }
 
         .progress-tracker {
@@ -470,11 +544,16 @@
 
         .accordion-toggle .arrow {
             transition: transform 0.3s ease;
-            font-size: 1.2em;
+            border: solid #667eea;
+            border-width: 0 2px 2px 0;
+            display: inline-block;
+            padding: 3px;
+            transform: rotate(45deg);
+            margin-right: 5px;
         }
 
         .accordion-toggle.active .arrow {
-            transform: rotate(180deg);
+            transform: rotate(-135deg);
         }
 
         .accordion-content {
@@ -483,11 +562,25 @@
             transition: max-height 0.5s ease-out;
         }
 
-        /* A class to show the content when active */
         .accordion-content.active {
-            max-height: 1000px; /* Adjust as needed for content */
+            max-height: 1000px; /* Expand the content */
         }
 
+        .color-picker-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .color-picker-group input[type="color"] {
+            border-radius: 5px;
+        }
+        
+        .color-settings-grid {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
 
         @media (max-width: 768px) {
             .navbar {
@@ -496,8 +589,10 @@
             }
 
             .calendar {
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(1, 1fr); /* Single column for mobile */
             }
+            .calendar-header { display: none; } /* Hide weekday headers on mobile */
+            .calendar-day { min-height: auto; padding: 10px; }
 
             .dashboard-content {
                 padding: 15px;
@@ -516,8 +611,11 @@
             }
 
             .nav-links {
-                flex-direction: column;
                 width: 100%;
+                overflow-x: auto;
+                justify-content: flex-start;
+                -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+                scrollbar-width: none; /* Hide scrollbar for Firefox */
             }
 
             table {
@@ -555,14 +653,15 @@
         </nav>
 
         <div class="dashboard-content">
-            <!-- 1. Upskilling Section -->
+            <!-- 1. Tasks Section -->
             <div class="section">
-                <h2>🎯 Upskilling</h2>
+                <h2>📝 Tasks</h2>
                 
                 <div class="subsection">
                     <h3>Add New Task</h3>
                     <div class="task-input">
                         <input type="text" id="taskInput" placeholder="Enter task name">
+                        <input type="text" id="taskDescription" placeholder="Enter task description">
                         <input type="date" id="taskDate">
                         <button class="add-btn">Add Task</button>
                     </div>
@@ -570,7 +669,7 @@
 
                 <div class="subsection">
                     <div class="task-category">
-                        <h3 class="accordion-toggle">Pending Tasks <span class="arrow">▼</span></h3>
+                        <div class="accordion-toggle active"><h3>Pending Tasks</h3><span class="arrow"></span></div>
                         <ul class="task-list accordion-content" id="pendingTaskList">
                             <li class="task-item">
                                 <input type="checkbox">
@@ -585,7 +684,7 @@
                         </ul>
                     </div>
                     <div class="task-category">
-                        <h3 class="accordion-toggle">Completed Tasks <span class="arrow">▼</span></h3>
+                        <div class="accordion-toggle"><h3>Completed Tasks</h3><span class="arrow"></span></div>
                         <ul class="task-list accordion-content" id="completedTaskList">
                             <li class="task-item">
                                 <input type="checkbox" checked>
@@ -595,30 +694,54 @@
                         </ul>
                     </div>
                     <div class="task-category">
-                        <h3 class="accordion-toggle">Upcoming Tasks <span class="arrow">▼</span></h3>
+                        <div class="accordion-toggle"><h3>Upcoming Tasks</h3><span class="arrow"></span></div>
                         <ul class="task-list accordion-content" id="upcomingTaskList"></ul>
                     </div>
                 </div>
+            </div>
 
+            <!-- 2. Progress Section -->
+            <div class="section">
+                <h2>📊 Progress Tracker</h2>
                 <div class="subsection">
-                    <h3>Progress Tracker</h3>
                     <div class="progress-tracker">
                         <div class="progress-bar">
                             <div class="progress-fill" id="progressFill" style="width: 33%;">33%</div>
                         </div>
                     </div>
                 </div>
+            </div>
 
+            <!-- 3. Calendar Section -->
+            <div class="section">
+                <h2>📅 Task Calendar</h2>
                 <div class="subsection">
-                    <h3>Task Calendar</h3>
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                         <button id="backButton">Previous</button>
                         <h4 id="currentMonth"></h4>
                         <button id="nextButton">Next</button>
                     </div>
-
                     <div class="calendar" id="taskCalendar">
                         <!-- Calendar days will be generated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Color Customization Section -->
+            <div class="section">
+                <h2>🎨 Customize Colors</h2>
+                <div class="subsection color-settings-grid">
+                    <div class="color-picker-group">
+                        <label for="pendingColor">Pending:</label>
+                        <input type="color" id="pendingColor" data-status="pending">
+                    </div>
+                    <div class="color-picker-group">
+                        <label for="upcomingColor">Upcoming:</label>
+                        <input type="color" id="upcomingColor" data-status="upcoming">
+                    </div>
+                    <div class="color-picker-group">
+                        <label for="completedColor">Completed:</label>
+                        <input type="color" id="completedColor" data-status="completed">
                     </div>
                 </div>
             </div>
@@ -627,10 +750,12 @@
 
     <div id="newTaskModal">
         <h2>New Task</h2>
+        <div id="tasksForDay"></div>
+        <hr/>
         <input id="taskTitleInput" placeholder="Task Title" />
         <textarea id="taskDescInput" placeholder="Task Description"></textarea>
         <select id="taskStatusSelect">
-            <option value="pending">Pending</option>
+            <option value="pending" selected>Pending</option>
             <option value="completed">Completed</option>
             <option value="upcoming">Upcoming</option>
         </select>

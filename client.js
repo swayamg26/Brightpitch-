@@ -41,9 +41,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const fieldName = e.target.dataset.field;
             const newValue = e.target.textContent;
 
-            await updateDoc(clientDocRef, {
-                [fieldName]: newValue
-            });
+            if (clientDocRef) {
+                await updateDoc(clientDocRef, {
+                    [fieldName]: newValue
+                });
+            }
         });
     });
 });

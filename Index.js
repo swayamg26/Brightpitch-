@@ -7,5 +7,5 @@ function selectRole(role) {
     }
 }
 
-document.querySelector('.role-btn.owner').addEventListener('click', () => selectRole('owner'));
-document.querySelector('.role-btn.employee').addEventListener('click', () => selectRole('employee'));
+document.querySelector('.role-btn.owner')?.addEventListener('click', () => selectRole('owner'));
+document.querySelector('.role-btn.employee')?.addEventListener('click', () => selectRole('employee'));
