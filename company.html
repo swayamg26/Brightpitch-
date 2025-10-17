@@ -13,8 +13,9 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f5f5;
+            background: #000000;
             min-height: 100vh;
+            color: #e0e0e0;
         }
 
         .selection-screen {
@@ -75,7 +76,7 @@
 
         .dashboard {
             display: none;
-            background: #f5f5f5;
+            background: #000000;
             min-height: 100vh;
         }
 
@@ -151,11 +152,12 @@
         }
 
         .section {
-            background: white;
+            background: #000000;
             border-radius: 15px;
             padding: 25px;
             margin-bottom: 30px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border: 1px solid #222;
         }
 
         .section h2 {
@@ -185,9 +187,11 @@
             flex: 1;
             min-width: 200px;
             padding: 10px;
-            border: 2px solid #ddd;
+            border: 1px solid #555;
             border-radius: 5px;
             font-size: 1em;
+            background-color: #3a3a3a;
+            color: #e0e0e0;
         }
 
         .add-btn, .delete-btn, .edit-btn {
@@ -200,7 +204,7 @@
         }
 
         .add-btn {
-            background: #667eea;
+            background: orange;
             color: white;
         }
 
@@ -223,7 +227,7 @@
         }
 
         .task-item, .client-item, .teammate-item, .assignment-item {
-            background: #f9f9f9;
+            background: #2a2a2a;
             padding: 15px;
             margin-bottom: 10px;
             border-radius: 8px;
@@ -302,18 +306,44 @@
         }
 
         .editable-content {
-            border: 2px dashed #ddd;
+            border: 2px dashed #555;
             padding: 10px;
             border-radius: 5px;
             min-height: 50px;
             margin-bottom: 10px;
             cursor: text;
+            color: #e0e0e0;
         }
 
         .editable-content:focus {
             outline: none;
             border-color: #667eea;
-            background: #f0f4ff;
+            background: #3a3a3a;
+        }
+
+        .client-grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .client-card {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .client-card h4 {
+            color: #a9a0e0; /* A lighter purple */
+        }
+
+        .client-card p {
+            color: #ccc;
+            font-size: 0.9em;
         }
 
         table {
@@ -325,7 +355,7 @@
         table th, table td {
             padding: 12px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #444;
         }
 
         table th {
@@ -435,11 +465,11 @@
         <nav class="navbar">
             <h1><a href="index.html" style="color:white; text-decoration: none;">Bright Pitch</a></h1>
             <div class="nav-links">
-                <a href="upskill.html">🎯 Upskilling</a>
-                <a href="company.html" class="active">🏢 Company</a>
-                <a href="finance.html">💰 Finance</a>
-                <a href="college.html">🎓 College</a>
-                <a href="learnapart.html">📚 Learn</a>
+                <a href="upskill.html" data-page="upskill.html">🎯 Upskilling</a>
+                <a href="company.html" data-page="company.html" class="active">🏢 Company</a>
+                <a href="finance.html" data-page="finance.html">💰 Finance</a>
+                <a href="college.html" data-page="college.html">🎓 College</a>
+                <a href="learnapart.html" data-page="learnapart.html">📚 Learn</a>
             </div>
             <select class="company-switcher">
                 <option>Bright Pitch</option>
@@ -451,73 +481,35 @@
 
         <div class="dashboard-content">
             <!-- 2. Company - Bright Pitch -->
-            <div class="section">
-                <h2>🏢 Company - Bright Pitch</h2>
-                
-                <div class="subsection">
-                    <h3>Clients</h3>
-                    <div class="client-input">
-                        <input type="text" id="clientName" placeholder="Client name">
-                        <button class="add-btn" onclick="addClient()">Add Client</button> <!-- Kept for JS hook -->
-                    </div>
-                    <div id="clientList">
-                        <div class="client-item">
-                            <div style="flex: 1;">
-                                <h4 contenteditable="true">TechCorp Inc.</h4>
-                                <div class="editable-content" contenteditable="true">Web development project for e-commerce platform. Timeline: 3 months. Budget: $50,000.</div>
-                            </div>
-                            <button class="delete-btn">Delete</button>
-                        </div>
-                        <div class="client-item">
-                            <div style="flex: 1;">
-                                <h4 contenteditable="true">StartUp Ventures</h4>
-                                <div class="editable-content" contenteditable="true">Mobile app development for iOS and Android. Timeline: 4 months. Budget: $75,000.</div>
-                            </div>
-                            <button class="delete-btn">Delete</button>
-                        </div>
-                    </div>
+            <div class="section" id="client-section">
+                <h2>Client Information</h2>
+                <div class="client-input">
+                    <input type="text" id="infoClientName" placeholder="Client Name">
+                    <input type="text" id="infoClientProject" placeholder="Project Details">
+                    <input type="text" id="infoClientBudget" placeholder="Budget">
+                    <input type="text" id="infoClientContact" placeholder="Contact Person">
+                    <button class="add-btn" id="addClientBtn">Add Client Info</button>
                 </div>
-
                 <div class="subsection">
-                    <h3>Client Information</h3>
-                    <div class="client-input">
-                        <input type="text" id="infoClientName" placeholder="Client Name">
-                        <input type="text" id="infoClientProject" placeholder="Project Details">
-                        <input type="text" id="infoClientBudget" placeholder="Budget">
-                        <input type="text" id="infoClientContact" placeholder="Contact Person">
-                        <button class="add-btn" onclick="addClientInfo()">Add Client Info</button> <!-- Kept for JS hook -->
-                    </div>
-                    <table id="clientInfoTable">
-                        <thead>
-                            <tr>
-                                <th>Client Name</th>
-                                <th>Project Details</th>
-                                <th>Budget</th>
-                                <th>Contact Person</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Client rows will be dynamically inserted here -->
-                        </tbody>
-                    </table>
+                    <div id="clientGrid" class="client-grid-container"></div>
                 </div>
+            </div>
 
+            <div class="section" id="teammate-section">
+                <h2>Teammates</h2>
+                <div class="teammate-input">
+                    <input type="text" id="teammateNameInput" placeholder="Name">
+                    <input type="text" id="teammateRoleInput" placeholder="Role">
+                    <input type="email" id="teammateContactInput" placeholder="Contact Info (Email)">
+                    <input type="text" id="teammateTasksInput" placeholder="Assigned Tasks">
+                    <button class="add-btn" id="addTeammateBtn">Add Teammate</button>
+                </div>
                 <div class="subsection">
-                    <h3>Teammates</h3>
-                    <div class="teammate-input">
-                        <input type="text" id="teammateNameInput" placeholder="Name">
-                        <input type="text" id="teammateRoleInput" placeholder="Role">
-                        <input type="email" id="teammateContactInput" placeholder="Contact Info (Email)">
-                        <input type="text" id="teammateTasksInput" placeholder="Assigned Tasks">
-                        <button class="add-btn" onclick="addTeammate()">Add Teammate</button> <!-- Kept for JS hook -->
-                    </div>
                     <div id="teammateList">
                         <!-- Teammate cards will be dynamically inserted here -->
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 
