@@ -1,10 +1,11 @@
 let nav = 0;
 let clicked = null;
-let tasks = localStorage.getItem('tasks') ? JSON.parse(localStorage.getItem('tasks')) : [];
+let tasks = localStorage.getItem('upskillTasks') ? JSON.parse(localStorage.getItem('upskillTasks')) : [];
 
 const calendar = document.getElementById('taskCalendar');
 const newTaskModal = document.getElementById('newTaskModal');
 const backDrop = document.getElementById('modalBackDrop');
+const tasksForDayDiv = document.getElementById('tasksForDay');
 const taskTitleInput = document.getElementById('taskTitleInput');
 const taskDescInput = document.getElementById('taskDescInput'); // New description input
 const taskStatusSelect = document.getElementById('taskStatusSelect'); // New status select
@@ -12,10 +13,23 @@ const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Satur
 
 function openModal(date) {
     clicked = date;
-    const tasksForDay = tasks.filter(t => t.date === clicked);
+    const tasksOnDay = tasks.filter(t => t.date.replace(/-/g, '/') === clicked.replace(/-/g, '/'));
 
-    // For simplicity, this example doesn't show existing tasks in the modal,
-    // but you could extend it to list/edit tasks for the selected day.
+    if (tasksOnDay.length > 0) {
+        tasksForDayDiv.innerHTML = '';
+        tasksOnDay.forEach(task => {
+            const taskEl = document.createElement('div');
+            taskEl.classList.add('task-item-modal');
+            taskEl.innerHTML = `
+                <strong>${task.text}</strong>
+                <p>${task.description || (task.date ? `Due: ${task.date}` : 'No description')}</p>
+                <span class="status-badge ${task.status}">${task.status}</span>
+            `;
+            tasksForDayDiv.appendChild(taskEl);
+        });
+    } else {
+        tasksForDayDiv.innerHTML = '<p>No tasks for this day. Add one below!</p>';
+    }
 
     newTaskModal.style.display = 'block';
     backDrop.style.display = 'block';
@@ -60,25 +74,33 @@ function load() {
         const daySquare = document.createElement('div');
         daySquare.classList.add('calendar-day');
 
-        const dayString = `${month + 1}/${i - paddingDays}/${year}`;
+        const dayString = `${year}/${String(month + 1).padStart(2, '0')}/${String(i - paddingDays).padStart(2, '0')}`;
 
         if (i > paddingDays) {
             daySquare.innerText = i - paddingDays;
 
-            const tasksForDay = tasks.filter(t => t.date === dayString);
+            const tasksForDay = tasks.filter(t => t.date && t.date.replace(/-/g, '/') === dayString);
 
             if (i - paddingDays === day && nav === 0) {
                 daySquare.id = 'currentDay';
             }
 
             if (tasksForDay.length > 0) {
+                const eventsContainer = document.createElement('div');
+                eventsContainer.className = 'calendar-events';
                 tasksForDay.forEach(task => {
-                    const taskDiv = document.createElement('div');
-                    taskDiv.classList.add('calendar-task');
-                    taskDiv.classList.add(task.status); // 'pending', 'completed', or 'upcoming'
-                    taskDiv.innerText = task.title;
-                    daySquare.appendChild(taskDiv);
+                    const eventIndicator = document.createElement('div');
+                    eventIndicator.className = 'event-indicator';
+                    eventIndicator.setAttribute('data-status', task.status || 'pending');
+                    eventIndicator.innerHTML = `
+                        <span class="event-title">${task.text}</span><div class="event-popup">
+                            <strong>${task.text}</strong>
+                            <p>${task.description || 'No description.'}</p>
+                        </div>
+                    `;
+                    eventsContainer.appendChild(eventIndicator);
                 });
+                daySquare.appendChild(eventsContainer);
             }
 
             daySquare.addEventListener('click', () => openModal(dayString));
@@ -95,6 +117,7 @@ function closeModal() {
     newTaskModal.style.display = 'none';
     backDrop.style.display = 'none';
     taskTitleInput.value = '';
+    taskStatusSelect.value = 'pending';
     taskDescInput.value = '';
     clicked = null;
     load();
@@ -105,13 +128,15 @@ function saveTask() {
         taskTitleInput.classList.remove('error');
 
         tasks.push({
-            date: clicked,
-            title: taskTitleInput.value,
+            id: Date.now(),
+            text: taskTitleInput.value,
+            date: clicked.replace(/\//g, '-'), // Store in YYYY-MM-DD format
             description: taskDescInput.value,
             status: taskStatusSelect.value,
+            completed: taskStatusSelect.value === 'completed',
         });
 
-        localStorage.setItem('tasks', JSON.stringify(tasks));
+        localStorage.setItem('upskillTasks', JSON.stringify(tasks));
         closeModal();
     } else {
         taskTitleInput.classList.add('error');
@@ -132,6 +157,10 @@ function initButtons() {
     document.getElementById('saveButton').addEventListener('click', saveTask);
     document.getElementById('cancelButton').addEventListener('click', closeModal);
 }
-
-initButtons();
-load();
+document.addEventListener('DOMContentLoaded', () => {
+    // Ensure calendar-specific buttons are initialized only if they exist on the page
+    if (document.getElementById('taskCalendar')) {
+        initButtons();
+        load();
+    }
+});
