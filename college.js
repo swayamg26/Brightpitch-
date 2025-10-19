@@ -1,122 +1,9 @@
-let nav = 0;
-let clicked = null;
+let nav = 0; // Shared navigation offset
 let events = localStorage.getItem('events') ? JSON.parse(localStorage.getItem('events')) : [];
-
-const calendar = document.getElementById('assignmentCalendar');
-const newAssignmentModal = document.getElementById('newAssignmentModal');
-const backDrop = document.getElementById('modalBackDrop');
-const eventTitleInput = document.getElementById('eventTitleInput');
-const eventDescInput = document.getElementById('eventDescInput');
-const eventStatusSelect = document.getElementById('eventStatusSelect');
 
 const pendingList = document.getElementById('pendingAssignmentsList');
 const completedList = document.getElementById('completedAssignmentsList');
 const upcomingList = document.getElementById('upcomingAssignmentsList');
-
-const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-
-function logout() {
-    alert('Logged out!');
-    window.location.href = 'index.html';
-}
-
-function openModal(date) {
-    clicked = date;
-    newAssignmentModal.style.display = 'block';
-    backDrop.style.display = 'block';
-}
-
-function load() {
-    const dt = new Date();
-    if (nav !== 0) {
-        dt.setMonth(new Date().getMonth() + nav);
-    }
-
-    const day = dt.getDate();
-    const month = dt.getMonth();
-    const year = dt.getFullYear();
-
-    const firstDayOfMonth = new Date(year, month, 1);
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-    const dateString = firstDayOfMonth.toLocaleDateString('en-us', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-    });
-    const paddingDays = weekdays.indexOf(dateString.split(', ')[0]);
-
-    document.getElementById('currentMonth').innerText =
-        `${dt.toLocaleDateString('en-us', { month: 'long' })} ${year}`;
-
-    calendar.innerHTML = '';
-
-    // Render calendar headers
-    weekdays.forEach(day => {
-        const daySquare = document.createElement('div');
-        daySquare.classList.add('calendar-header');
-        daySquare.innerText = day.substring(0, 3).toUpperCase();
-        calendar.appendChild(daySquare);
-    });
-
-    for (let i = 1; i <= paddingDays + daysInMonth; i++) {
-        const daySquare = document.createElement('div');
-        daySquare.classList.add('calendar-day');
-        const dayString = `${month + 1}/${i - paddingDays}/${year}`;
-
-        if (i > paddingDays) {
-            daySquare.innerText = i - paddingDays;
-            const eventsForDay = events.filter(e => e.date === dayString);
-
-            if (i - paddingDays === day && nav === 0) {
-                daySquare.id = 'currentDay';
-            }
-
-            if (eventsForDay.length > 0) {
-                eventsForDay.forEach(event => {
-                    const eventDiv = document.createElement('div');
-                    eventDiv.classList.add('calendar-task');
-                    eventDiv.classList.add(event.status);
-                    eventDiv.innerText = event.title;
-                    daySquare.appendChild(eventDiv);
-                });
-            }
-
-            daySquare.addEventListener('click', () => openModal(dayString));
-        } else {
-            daySquare.classList.add('padding');
-        }
-        calendar.appendChild(daySquare);
-    }
-    loadAssignmentLists();
-}
-
-function closeModal() {
-    eventTitleInput.classList.remove('error');
-    newAssignmentModal.style.display = 'none';
-    backDrop.style.display = 'none';
-    eventTitleInput.value = '';
-    eventDescInput.value = '';
-    clicked = null;
-    load();
-}
-
-function saveEvent() {
-    if (eventTitleInput.value) {
-        eventTitleInput.classList.remove('error');
-        events.push({
-            date: clicked,
-            title: eventTitleInput.value,
-            description: eventDescInput.value,
-            status: eventStatusSelect.value,
-        });
-        localStorage.setItem('events', JSON.stringify(events));
-        closeModal();
-    } else {
-        eventTitleInput.classList.add('error');
-    }
-}
 
 function addAssignmentFromInput() {
     const titleInput = document.getElementById('assignmentTitleInput');
@@ -124,18 +11,44 @@ function addAssignmentFromInput() {
 
     if (titleInput.value && dateInput.value) {
         const date = new Date(dateInput.value);
-        const dateString = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+        const dateString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate() + 1).padStart(2, '0')}`;
         events.push({
+            id: Date.now(),
             date: dateString,
             title: titleInput.value,
             description: '',
             status: 'pending',
+            completed: false,
         });
         localStorage.setItem('events', JSON.stringify(events));
         titleInput.value = '';
         dateInput.value = '';
-        load();
+        saveAndRender();
     }
+}
+
+function deleteEvent(eventId) {
+    if (confirm('Are you sure you want to delete this assignment?')) {
+        events = events.filter(e => e.id !== eventId);
+        saveAndRender();
+    }
+}
+
+function toggleEvent(eventId) {
+    const event = events.find(e => e.id === eventId);
+    if (event) {
+        event.completed = !event.completed;
+        // Also update status for consistency, though 'completed' property is primary
+        event.status = event.completed ? 'completed' : 'pending';
+        saveAndRender();
+    }
+}
+
+function saveAndRender() {
+    localStorage.setItem('events', JSON.stringify(events));
+    loadAssignmentLists();
+    // Also notify calendar to re-render
+    window.dispatchEvent(new Event('events-updated'));
 }
 
 function loadAssignmentLists() {
@@ -143,48 +56,90 @@ function loadAssignmentLists() {
     completedList.innerHTML = '';
     upcomingList.innerHTML = '';
 
-    const assignments = events.filter(e => e.status !== 'exam');
+    const dt = new Date();
+    if (nav !== 0) {
+        dt.setMonth(new Date().getMonth() + nav);
+    }
+    const currentMonth = dt.getMonth();
+    const currentYear = dt.getFullYear();
+    const year = currentYear; // for the display string
+
+    document.getElementById('currentMonthDisplay').innerText = `${dt.toLocaleDateString('en-us', { month: 'long' })} ${year}`;
+
+    const assignments = events.filter(e => {
+        const eventDate = new Date(e.date);
+        return eventDate.getMonth() === currentMonth && eventDate.getFullYear() === currentYear;
+    });
 
     assignments.forEach(a => {
         const assignmentItem = document.createElement('li');
         assignmentItem.className = 'assignment-item';
-        assignmentItem.innerHTML = `<span class="task-text">${a.title} (${a.date})</span>`;
+        assignmentItem.innerHTML = `
+            <div>
+                <input type="checkbox" ${a.completed ? 'checked' : ''}>
+                <span class="task-text ${a.completed ? 'completed' : ''}">${a.title} ${a.date ? `(${a.date})` : ''}</span>
+            </div>
+            <div>
+                <button class="edit-btn">Edit</button>
+                <button class="delete-btn">Delete</button>
+            </div>
+        `;
 
-        if (a.status === 'pending') {
-            pendingList.appendChild(assignmentItem);
-        } else if (a.status === 'completed') {
+        assignmentItem.querySelector('input[type="checkbox"]').addEventListener('change', () => toggleEvent(a.id));
+        assignmentItem.querySelector('.delete-btn').addEventListener('click', () => deleteEvent(a.id));
+        // Placeholder for edit functionality
+        assignmentItem.querySelector('.edit-btn').addEventListener('click', () => alert('Edit functionality coming soon!'));
+
+        if (a.completed) {
             completedList.appendChild(assignmentItem);
         } else if (a.status === 'upcoming') {
             upcomingList.appendChild(assignmentItem);
+        } else { // 'pending' or other statuses
+            pendingList.appendChild(assignmentItem);
+        }
+    });
+
+    // This ensures the accordion state is respected on re-render
+    document.querySelectorAll('.accordion-toggle').forEach(button => {
+        const content = button.nextElementSibling;
+        if (button.classList.contains('active')) {
+            content.classList.add('active');
         }
     });
 }
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
-    document.querySelector('.logout-btn').addEventListener('click', logout);
-    document.querySelector('.add-btn').addEventListener('click', addAssignmentFromInput);
+    document.querySelector('.subsection .add-btn').addEventListener('click', addAssignmentFromInput);
 
     document.getElementById('nextButton').addEventListener('click', () => {
         nav++;
-        load();
+        loadAssignmentLists();
+        window.dispatchEvent(new CustomEvent('nav-change', { detail: { nav } }));
     });
 
     document.getElementById('backButton').addEventListener('click', () => {
         nav--;
-        load();
+        loadAssignmentLists();
+        window.dispatchEvent(new CustomEvent('nav-change', { detail: { nav } }));
     });
-
-    document.getElementById('saveButton').addEventListener('click', saveEvent);
-    document.getElementById('cancelButton').addEventListener('click', closeModal);
 
     document.querySelectorAll('.accordion-toggle').forEach(button => {
         button.addEventListener('click', () => {
             const content = button.nextElementSibling;
             button.classList.toggle('active');
             content.classList.toggle('active');
+            // Ensure the content has the active class if the button does
+            if (button.classList.contains('active')) {
+                content.classList.add('active');
+            }
         });
     });
 
-    load();
+    loadAssignmentLists();
+});
+
+window.addEventListener('events-updated', () => {
+    events = localStorage.getItem('events') ? JSON.parse(localStorage.getItem('events')) : [];
+    loadAssignmentLists();
 });

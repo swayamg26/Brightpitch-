@@ -1,4 +1,5 @@
 let tasks = localStorage.getItem('upskillTasks') ? JSON.parse(localStorage.getItem('upskillTasks')) : [];
+let nav = 0; // Shared navigation offset
 
 const defaultColors = {
     pending: '#f0ad4e',
@@ -6,13 +7,6 @@ const defaultColors = {
     completed: '#5cb85c',
 };
 let taskColors = localStorage.getItem('taskColors') ? JSON.parse(localStorage.getItem('taskColors')) : defaultColors;
-
-function logout() {
-    // For now, just alerts. In a real app, this would redirect to a login page.
-    alert('Logged out!');
-    // You might want to redirect to index.html
-    window.location.href = 'index.html';
-}
 
 function addTask() {
     const input = document.getElementById('taskInput');
@@ -90,7 +84,20 @@ function renderTasks() {
     completedTaskList.innerHTML = '';
     if (upcomingTaskList) upcomingTaskList.innerHTML = '';
 
-    tasks.forEach(task => {
+    const dt = new Date();
+    if (nav !== 0) {
+        dt.setMonth(new Date().getMonth() + nav);
+    }
+    const currentMonth = dt.getMonth();
+    const currentYear = dt.getFullYear();
+
+    const monthlyTasks = tasks.filter(task => {
+        if (!task.date) return false; // Only include tasks with a date
+        const taskDate = new Date(task.date);
+        return taskDate.getFullYear() === currentYear && taskDate.getMonth() === currentMonth;
+    });
+
+    monthlyTasks.forEach(task => {
         const li = document.createElement('li');
         li.className = 'task-item';
         li.innerHTML = `
@@ -185,14 +192,30 @@ function setupColorPickers() {
 
 // Initial setup and event listeners
 document.addEventListener('DOMContentLoaded', () => {
-    document.querySelector('.logout-btn').addEventListener('click', logout);
-    document.querySelector('button.add-btn').addEventListener('click', addTask);
+    document.querySelector('.task-input .add-btn').addEventListener('click', addTask);
     document.getElementById('taskInput').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') addTask();
+    });
+
+    document.getElementById('nextButton').addEventListener('click', () => {
+        nav++;
+        renderTasks();
+        window.dispatchEvent(new CustomEvent('nav-change', { detail: { nav } }));
+    });
+
+    document.getElementById('backButton').addEventListener('click', () => {
+        nav--;
+        renderTasks();
+        window.dispatchEvent(new CustomEvent('nav-change', { detail: { nav } }));
     });
 
     // Initial setup calls
     applyColors();
     setupColorPickers();
+    renderTasks();
+});
+
+window.addEventListener('tasks-updated', () => {
+    tasks = localStorage.getItem('upskillTasks') ? JSON.parse(localStorage.getItem('upskillTasks')) : [];
     renderTasks();
 });

@@ -1,4 +1,4 @@
-let nav = 0;
+let nav = 0; // This will be synced with upskill.js
 let clicked = null;
 let tasks = localStorage.getItem('upskillTasks') ? JSON.parse(localStorage.getItem('upskillTasks')) : [];
 
@@ -138,6 +138,7 @@ function saveTask() {
 
         localStorage.setItem('upskillTasks', JSON.stringify(tasks));
         closeModal();
+        window.dispatchEvent(new Event('tasks-updated')); // Notify upskill.js
     } else {
         taskTitleInput.classList.add('error');
     }
@@ -145,13 +146,6 @@ function saveTask() {
 
 function initButtons() {
     document.getElementById('nextButton').addEventListener('click', () => {
-        nav++;
-        load();
-    });
-
-    document.getElementById('backButton').addEventListener('click', () => {
-        nav--;
-        load();
     });
 
     document.getElementById('saveButton').addEventListener('click', saveTask);
@@ -162,5 +156,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('taskCalendar')) {
         initButtons();
         load();
+
+        window.addEventListener('nav-change', (e) => {
+            nav = e.detail.nav;
+            load();
+        });
     }
 });

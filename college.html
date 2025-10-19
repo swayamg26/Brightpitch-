@@ -84,67 +84,6 @@
             display: block;
         }
 
-        .navbar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .navbar h1 {
-            font-size: 1.8em;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 15px;
-            flex-grow: 1;
-            justify-content: center;
-        }
-
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            padding: 8px 15px;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
-
-        .nav-links a:hover, .nav-links a.active {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .company-switcher {
-            padding: 8px 15px;
-            border-radius: 5px;
-            border: 2px solid white;
-            background: transparent;
-            color: white;
-            font-size: 1em;
-            cursor: pointer;
-        }
-
-        .logout-btn {
-            padding: 10px 25px;
-            background: white;
-            color: #667eea;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .logout-btn:hover {
-            transform: scale(1.05);
-        }
-
         .dashboard-content {
             padding: 30px;
             max-width: 1400px;
@@ -295,17 +234,26 @@
 
         .accordion-toggle .arrow {
             transition: transform 0.3s ease;
-            font-size: 1.2em;
+            border: solid #667eea;
+            border-width: 0 2px 2px 0;
+            display: inline-block;
+            padding: 3px;
+            transform: rotate(45deg);
+            margin-right: 5px;
         }
 
         .accordion-toggle.active .arrow {
-            transform: rotate(180deg);
+            transform: rotate(-135deg);
         }
 
         .accordion-content {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.5s ease-out;
+        }
+
+        .accordion-content.active {
+            max-height: 1000px; /* Adjust as needed */
         }
 
         #newAssignmentModal {
@@ -490,14 +438,32 @@
             color: #666;
         }
 
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+
         @media (max-width: 768px) {
             .navbar {
                 flex-direction: column;
                 text-align: center;
             }
 
-            .calendar {
-                grid-template-columns: repeat(3, 1fr);
+            .subsection > .calendar {
+                min-width: 600px; /* Force a minimum width to maintain layout */
+            }
+
+            .subsection:has(> .calendar) {
+                overflow-x: auto; /* Allow calendar to scroll horizontally */
             }
 
             .dashboard-content {
@@ -536,31 +502,27 @@
                 left: 5%;
                 top: 50px;
             }
+
+            #currentMonth {
+                font-size: 1em;
+                text-align: center;
+            }
         }
     </style>
 </head>
 <body>
     <!-- Owner Dashboard -->
     <div class="dashboard active" id="ownerDashboard">
-        <nav class="navbar">
-            <h1><a href="index.html" style="color:white; text-decoration: none;">Bright Pitch</a></h1>
-            <div class="nav-links">
-                <a href="upskill.html">🎯 Upskilling</a>
-                <a href="company.html">🏢 Company</a>
-                <a href="finance.html">💰 Finance</a>
-                <a href="college.html" class="active">🎓 College</a>
-                <a href="learnapart.html">📚 Learn</a>
-            </div>
-            <select class="company-switcher">
-                <option>Bright Pitch</option>
-                <option>Tech Ventures</option>
-                <option>Creative Solutions</option>
-            </select>
-            <button class="logout-btn">Logout</button>
-        </nav>
-
         <div class="dashboard-content">
             <!-- 4. College Section -->
+            <a href="index.html" class="back-link">← Back to Home</a>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #2a2a2a; padding: 10px; border-radius: 8px;">
+                <button id="backButton" class="edit-btn">‹ Prev Month</button>
+                <h3 id="currentMonthDisplay" style="color: #e0e0e0;"></h3>
+                <button id="nextButton" class="edit-btn">Next Month ›</button>
+            </div>
+
             <div class="section">
                 <h2>🎓 College</h2>
                 
@@ -575,19 +537,19 @@
 
                 <div class="subsection">
                     <div class="task-category">
-                        <h3 class="accordion-toggle">Pending Assignments <span class="arrow">▼</span></h3>
-                        <ul class="assignment-list accordion-content" id="pendingAssignmentsList">
+                        <div class="accordion-toggle active"><h3>Pending Assignments</h3><span class="arrow"></span></div>
+                        <ul class="assignment-list accordion-content active" id="pendingAssignmentsList">
                             <!-- Pending assignments will be populated here -->
                         </ul>
                     </div>
                     <div class="task-category">
-                        <h3 class="accordion-toggle">Completed Assignments <span class="arrow">▼</span></h3>
+                        <div class="accordion-toggle"><h3>Completed Assignments</h3><span class="arrow"></span></div>
                         <ul class="assignment-list accordion-content" id="completedAssignmentsList">
                              <!-- Completed assignments will be populated here -->
                         </ul>
                     </div>
                     <div class="task-category">
-                        <h3 class="accordion-toggle">Upcoming Assignments <span class="arrow">▼</span></h3>
+                        <div class="accordion-toggle"><h3>Upcoming Assignments</h3><span class="arrow"></span></div>
                         <ul class="assignment-list accordion-content" id="upcomingAssignmentsList">
                             <!-- Upcoming assignments will be populated here -->
                         </ul>
@@ -596,11 +558,6 @@
 
                 <div class="subsection">
                     <h3>Assignment & Exam Calendar</h3>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <button id="backButton">Previous</button>
-                        <h4 id="currentMonth"></h4>
-                        <button id="nextButton">Next</button>
-                    </div>
                     <div class="calendar" id="assignmentCalendar">
                         <!-- Calendar will be generated here -->
                     </div>
@@ -626,5 +583,6 @@
     <div id="modalBackDrop"></div>
 
     <script type="module" src="college.js"></script>
+    <script type="module" src="college-calendar.js"></script>
 </body>
 </html>

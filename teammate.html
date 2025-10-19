@@ -84,67 +84,6 @@
             display: block;
         }
 
-        .navbar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .navbar h1 {
-            font-size: 1.8em;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 15px;
-            flex-grow: 1;
-            justify-content: center;
-        }
-
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            padding: 8px 15px;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
-
-        .nav-links a:hover, .nav-links a.active {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .company-switcher {
-            padding: 8px 15px;
-            border-radius: 5px;
-            border: 2px solid white;
-            background: transparent;
-            color: white;
-            font-size: 1em;
-            cursor: pointer;
-        }
-
-        .logout-btn {
-            padding: 10px 25px;
-            background: white;
-            color: #667eea;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .logout-btn:hover {
-            transform: scale(1.05);
-        }
-
         .dashboard-content {
             padding: 30px;
             max-width: 1400px;
@@ -414,6 +353,33 @@
             border-color: #667eea;
             background: #4a4a4a;
         }
+
+        .detail-field .delete-field-btn {
+            display: none; /* Hidden by default */
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        .detail-field:hover .delete-field-btn { display: inline; } /* Show on hover */
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .action-buttons { text-align: right; margin-top: 20px; }
+
+        .add-btn {
+            background: #667eea;
+            color: white;
+        }
  
         @media (max-width: 768px) {
             .navbar {
@@ -456,43 +422,19 @@
 </head>
 <body>
     <div class="dashboard active">
-        <nav class="navbar">
-            <h1><a href="index.html" style="color:white; text-decoration: none;">Bright Pitch</a></h1>
-            <div class="nav-links">
-                <a href="upskill.html">🎯 Upskilling</a>
-                <a href="company.html" class="active">🏢 Company</a>
-                <a href="finance.html">💰 Finance</a>
-                <a href="college.html">🎓 College</a>
-            </div>
-            <select class="company-switcher">
-                <option>Bright Pitch</option>
-                <option>Tech Ventures</option>
-                <option>Creative Solutions</option>
-            </select>
-            <button class="logout-btn">Logout</button>
-        </nav>
 
         <div class="dashboard-content">
+            <a href="company.html" class="back-link">← Back to Company List</a>
             <div class="section">
                 <h2 id="teammateNameHeader">Teammate Details</h2>
                 
-                <div class="subsection">
-                    <div class="detail-field">
-                        <label for="teammateName">Name</label>
-                        <div id="teammateName" contenteditable="true" data-field="name"></div>
-                    </div>
-                    <div class="detail-field">
-                        <label for="teammateRole">Role</label>
-                        <div id="teammateRole" contenteditable="true" data-field="role"></div>
-                    </div>
-                    <div class="detail-field">
-                        <label for="teammateContact">Contact Info</label>
-                        <div id="teammateContact" contenteditable="true" data-field="contact"></div>
-                    </div>
-                    <div class="detail-field">
-                        <label for="teammateTasks">Assigned Tasks</label>
-                        <div id="teammateTasks" contenteditable="true" data-field="tasks"></div>
-                    </div>
+                <div class="subsection" id="teammateFieldsContainer">
+                    <!-- Dynamic fields will be rendered here by teammate.js -->
+                </div>
+                <div class="action-buttons">
+                    <button id="addFieldBtn" class="add-btn" style="background-color: #5bc0de;">Add Field</button>
+                    <button id="saveChangesBtn" class="add-btn">Save Changes</button>
+                    <button id="deleteTeammateBtn" class="delete-btn">Delete Teammate</button>
                 </div>
             </div>
         </div>

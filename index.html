@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Bright Pitch</title>
+    <title>Bright Pitch - Home</title>
     <style>
         * {
             margin: 0;
@@ -13,15 +13,20 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #000000;
+            color: #fdf9f9;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
         }
 
         .selection-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #000000;
+        }
+
+        .selection-screen-content {
             background: white;
             padding: 60px 40px;
             border-radius: 20px;
@@ -31,13 +36,13 @@
             width: 100%;
         }
 
-        .selection-screen h1 {
+        .selection-screen-content h1 {
             color: #333;
             margin-bottom: 20px;
             font-size: 2.5em;
         }
 
-        .selection-screen p {
+        .selection-screen-content p {
             color: #666;
             margin-bottom: 40px;
             font-size: 1.1em;
@@ -62,316 +67,79 @@
             letter-spacing: 1px;
         }
 
-        .role-btn.owner {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .role-btn.employee {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-        }
-
         .role-btn:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
         .dashboard {
-            display: none;
-            background: #f5f5f5;
-            min-height: 100vh;
-        }
-
-        .dashboard.active {
-            display: block;
+            display: none; /* Hidden by default */
         }
 
         .navbar {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
+            display: block;
+            text-align: center;
             align-items: center;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             flex-wrap: wrap;
             gap: 15px;
+            position: sticky;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
         }
 
         .navbar h1 {
-            font-size: 1.8em;
-        }
-
-        .company-switcher {
-            padding: 8px 15px;
-            border-radius: 5px;
-            border: 2px solid white;
-            background: transparent;
-            color: white;
-            font-size: 1em;
-            cursor: pointer;
-        }
-
-        .logout-btn {
-            padding: 10px 25px;
-            background: white;
-            color: #667eea;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .logout-btn:hover {
-            transform: scale(1.05);
+            font-size: 2.2em;
         }
 
         .dashboard-content {
-            padding: 30px;
-            max-width: 1400px;
+            padding: 50px 30px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
-        .section {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 30px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        .section h2 {
-            color: #667eea;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid #667eea;
-        }
-
-        .subsection {
-            margin-bottom: 25px;
-        }
-
-        .subsection h3 {
-            color: #764ba2;
-            margin-bottom: 15px;
-        }
-
-        .task-input, .client-input, .teammate-input {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-
-        .task-input input, .client-input input, .teammate-input input {
-            flex: 1;
-            min-width: 200px;
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            font-size: 1em;
-        }
-
-        .add-btn, .delete-btn, .edit-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .add-btn {
-            background: #667eea;
-            color: white;
-        }
-
-        .delete-btn {
-            background: #f5576c;
-            color: white;
-        }
-
-        .edit-btn {
-            background: #ffa726;
-            color: white;
-        }
-
-        .add-btn:hover, .delete-btn:hover, .edit-btn:hover {
-            opacity: 0.8;
-        }
-
-        .task-list, .client-list, .teammate-list, .assignment-list {
-            list-style: none;
-        }
-
-        .task-item, .client-item, .teammate-item, .assignment-item {
-            background: #f9f9f9;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .task-item input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-        }
-
-        .task-text {
-            flex: 1;
-            min-width: 150px;
-        }
-
-        .task-text.completed {
-            text-decoration: line-through;
-            opacity: 0.6;
-        }
-
-        .calendar {
+        .nav-grid {
             display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .calendar-header {
-            background: #667eea;
-            color: white;
-            padding: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
             text-align: center;
-            font-weight: 600;
-            border-radius: 5px;
         }
 
-        .calendar-day {
-            background: #f9f9f9;
-            padding: 15px;
-            border-radius: 5px;
-            min-height: 80px;
-            border: 2px solid #ddd;
-        }
-
-        .calendar-day.has-task {
-            background: #e3f2fd;
-            border-color: #667eea;
-        }
-
-        .progress-tracker {
-            margin-top: 20px;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 30px;
-            background: #ddd;
+        .nav-block {
+            background: #1a1a1a;
+            border: 1px solid #222;
+            padding: 40px 20px;
             border-radius: 15px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            transition: width 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-        }
-
-        .editable-content {
-            border: 2px dashed #ddd;
-            padding: 10px;
-            border-radius: 5px;
-            min-height: 50px;
-            margin-bottom: 10px;
-            cursor: text;
-        }
-
-        .editable-content:focus {
-            outline: none;
-            border-color: #667eea;
-            background: #f0f4ff;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-
-        table th, table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
-        table th {
-            background: #667eea;
-            color: white;
-        }
-
-        .video-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .video-card {
-            background: #f9f9f9;
-            padding: 15px;
-            border-radius: 8px;
-            cursor: pointer;
+            text-decoration: none;
+            color: #e0e0e0;
             transition: all 0.3s ease;
-            border: 2px solid #ddd;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
-        .video-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        .nav-block:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
             border-color: #667eea;
         }
 
-        .video-script-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+        .nav-block .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
         }
 
-        .video-script-modal.active {
-            display: flex;
+        .nav-block h2 {
+            font-size: 1.5em;
+            color: #667eea;
+            margin-bottom: 10px;
         }
 
-        .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            max-width: 700px;
-            width: 100%;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .close-modal {
-            float: right;
-            font-size: 28px;
-            cursor: pointer;
-            color: #666;
+        .nav-block p {
+            font-size: 1em;
+            color: #aaa;
         }
 
         @media (max-width: 768px) {
@@ -379,52 +147,109 @@
                 flex-direction: column;
                 text-align: center;
             }
-
-            .calendar {
-                grid-template-columns: repeat(3, 1fr);
-            }
-
             .dashboard-content {
-                padding: 15px;
-            }
-
-            .role-buttons {
-                flex-direction: column;
-            }
-
-            .role-btn {
-                width: 100%;
-            }
-
-            .selection-screen {
-                padding: 40px 20px;
-                box-shadow: none;
-                border-radius: 0;
-            }
-
-            .selection-screen h1 {
-                font-size: 2em;
+                padding: 30px 15px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Selection Screen -->
     <div class="selection-screen" id="selectionScreen">
-        <h1>Welcome to Bright Pitch</h1>
-        <p>Please select your role to continue</p>
-        <div class="role-buttons">
-            <button class="role-btn owner">Owner</button>
-            <button class="role-btn employee">Employee</button>
+        <div class="selection-screen-content">
+            <h1>Welcome to Bright Pitch</h1>
+            <p>Please select your role to continue</p>
+            <div class="role-buttons">
+                <button class="role-btn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">Owner</button>
+                <button class="role-btn" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">Employee</button>
+            </div>
         </div>
     </div>
+    <div class="dashboard" id="dashboard">
+        <nav class="navbar">
+            <h1><a href="index.html" style="color:white; text-decoration: none;">Bright Pitch</a></h1>
+        </nav>
 
-    <!-- Owner Dashboard -->
-    <div class="dashboard" id="ownerDashboard"></div>
+        <div class="dashboard-content">
+            <div class="nav-grid">
+                <a href="upskill.html" class="nav-block">
+                    <div class="icon">🎯</div>
+                    <div id="upskill-content">
+                        <h2>Upskilling</h2>
+                        <p>Track tasks, progress, and manage your learning calendar.</p>
+                    </div>
+                </a>
+                <a href="company.html" class="nav-block">
+                    <div class="icon">🏢</div>
+                    <div id="company-content">
+                        <h2>Company</h2>
+                        <p>Manage client information and team member details.</p>
+                    </div>
+                </a>
+                <a href="finance.html" class="nav-block">
+                    <div class="icon">💰</div>
+                    <div id="finance-content">
+                        <h2>Finance</h2>
+                        <p>Analyze income, expenses, and client payment status.</p>
+                    </div>
+                </a>
+                <a href="college.html" class="nav-block">
+                    <div class="icon">🎓</div>
+                    <div id="college-content">
+                        <h2>College</h2>
+                        <p>Organize assignments, exams, and academic progress.</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const selectionScreen = document.getElementById('selectionScreen');
+            const dashboard = document.getElementById('dashboard');            // Check if a role has been selected in this session
+            if (sessionStorage.getItem('roleSelected') === 'true') {
+                selectionScreen.style.display = 'none';
+                dashboard.style.display = 'block';
+            }
 
-    <!-- Video Script Modal -->
-    <div class="video-script-modal" id="videoModal"></div>
+            document.querySelectorAll('.role-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    sessionStorage.setItem('roleSelected', 'true');
+                    selectionScreen.style.display = 'none';
+                    dashboard.style.display = 'block';
+                });            });            // Upskilling Progress
+            const upskillTasks = JSON.parse(localStorage.getItem('upskillTasks')) || [];
+            const upskillContent = document.getElementById('upskill-content');
+            if (upskillTasks.length > 0) {
+                const completed = upskillTasks.filter(t => t.completed).length;
+                const total = upskillTasks.length;
+                const percentage = Math.round((completed / total) * 100);
+                upskillContent.innerHTML = `<h2>Upskilling Progress</h2><p style="font-size: 2.5em; font-weight: bold; color: white; margin: 10px 0;">${percentage}%</p><p>${completed} of ${total} tasks completed.</p>`;
+            }
 
-    <script type="module" src="Index.js"></script>
+            // Company Info
+            const companyContent = document.getElementById('company-content');
+            const clients = JSON.parse(localStorage.getItem('clients')) || [];
+            const teammates = JSON.parse(localStorage.getItem('teammates')) || [];
+            companyContent.innerHTML = `<h2>Company</h2><p style="font-size: 2em; font-weight: bold; color: white; margin: 10px 0;">${clients.length} Clients</p><p>${teammates.length} Teammates</p>`;
+
+            // Finance Balance
+            const financeEntries = JSON.parse(localStorage.getItem('financeEntries')) || [];
+            const financeContent = document.getElementById('finance-content');
+            if (financeEntries.length > 0) {
+                const income = financeEntries.filter(e => e.type === 'income').reduce((sum, e) => sum + e.amount, 0);
+                const expense = financeEntries.filter(e => e.type === 'expense').reduce((sum, e) => sum + e.amount, 0);
+                const balance = income - expense;
+                financeContent.innerHTML = `<h2>Current Balance</h2><p style="font-size: 2em; font-weight: bold; color: ${balance >= 0 ? '#5cb85c' : '#d9534f'}; margin: 10px 0;">$${balance.toFixed(2)}</p><p>Track income and expenses.</p>`;
+            }
+
+            // College Assignments
+            const collegeEvents = JSON.parse(localStorage.getItem('events')) || [];
+            const collegeContent = document.getElementById('college-content');
+            if (collegeEvents.length > 0) {
+                const pendingAssignments = collegeEvents.filter(e => e.status === 'pending').length;
+                collegeContent.innerHTML = `<h2>College</h2><p style="font-size: 2.5em; font-weight: bold; color: white; margin: 10px 0;">${pendingAssignments}</p><p>Pending Assignment${pendingAssignments !== 1 ? 's' : ''}.</p>`;
+            }
+        });
+    </script>
 </body>
 </html>

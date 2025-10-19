@@ -84,71 +84,6 @@
             display: block;
         }
 
-        .navbar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            flex-wrap: wrap;
-            gap: 15px;
-            position: sticky;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-        }
-
-        .navbar h1 {
-            font-size: 1.8em;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 15px;
-            flex-grow: 1;
-            justify-content: center;
-        }
-
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            padding: 8px 15px;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
-
-        .nav-links a:hover, .nav-links a.active {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .company-switcher {
-            padding: 8px 15px;
-            border-radius: 5px;
-            border: 2px solid white;
-            background: transparent;
-            color: white;
-            font-size: 1em;
-            cursor: pointer;
-        }
-
-        .logout-btn {
-            padding: 10px 25px; 
-            background: white;
-            color: #667eea;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .logout-btn:hover {
-            transform: scale(1.05);
-        }
-
         .dashboard-content {
             padding: 30px;
             max-width: 1400px;
@@ -391,6 +326,11 @@
             white-space: normal;
         }
 
+        .event-indicator .event-title {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
         .event-indicator:hover .event-popup {
             display: block;
         }
@@ -581,6 +521,20 @@
             gap: 20px;
             flex-wrap: wrap;
         }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
 
         @media (max-width: 768px) {
             .navbar {
@@ -588,10 +542,12 @@
                 text-align: center;
             }
 
-            .calendar {
-                grid-template-columns: repeat(1, 1fr); /* Single column for mobile */
+            .subsection.accordion-content.active {
+                overflow-x: auto; /* Allow calendar to scroll horizontally */
             }
-            .calendar-header { display: none; } /* Hide weekday headers on mobile */
+            .calendar {
+                min-width: 600px; /* Force a minimum width to maintain layout */
+            }
             .calendar-day { min-height: auto; padding: 10px; }
 
             .dashboard-content {
@@ -629,31 +585,27 @@
                 left: 5%;
                 top: 50px;
             }
+
+            #currentMonth {
+                font-size: 1em;
+                text-align: center;
+            }
         }
     </style>
 </head>
 <body>
     <!-- Owner Dashboard -->
     <div class="dashboard active" id="ownerDashboard">
-        <nav class="navbar">
-            <h1><a href="index.html" style="color:white; text-decoration: none;">Bright Pitch</a></h1>
-            <div class="nav-links">
-                <a href="upskill.html" class="active">🎯 Upskilling</a>
-                <a href="company.html">🏢 Company</a>
-                <a href="finance.html">💰 Finance</a>
-                <a href="college.html">🎓 College</a>
-                <a href="learnapart.html">📚 Learn</a>
-            </div>
-            <select class="company-switcher">
-                <option>Bright Pitch</option>
-                <option>Tech Ventures</option>
-                <option>Creative Solutions</option>
-            </select>
-            <button class="logout-btn">Logout</button>
-        </nav>
-
         <div class="dashboard-content">
             <!-- 1. Tasks Section -->
+            <a href="index.html" class="back-link">← Back to Home</a>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #2a2a2a; padding: 10px; border-radius: 8px;">
+                <button id="backButton" class="edit-btn">‹ Prev Month</button>
+                <h3 id="currentMonth" style="color: #e0e0e0;"></h3>
+                <button id="nextButton" class="edit-btn">Next Month ›</button>
+            </div>
+
             <div class="section">
                 <h2>📝 Tasks</h2>
                 
@@ -714,15 +666,12 @@
 
             <!-- 3. Calendar Section -->
             <div class="section">
-                <h2>📅 Task Calendar</h2>
-                <div class="subsection">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <button id="backButton">Previous</button>
-                        <h4 id="currentMonth"></h4>
-                        <button id="nextButton">Next</button>
-                    </div>
+                <div class="accordion-toggle active">
+                    <h2>📅 Task Calendar</h2>
+                    <span class="arrow"></span>
+                </div>
+                <div class="subsection accordion-content active">
                     <div class="calendar" id="taskCalendar">
-                        <!-- Calendar days will be generated by JavaScript -->
                     </div>
                 </div>
             </div>

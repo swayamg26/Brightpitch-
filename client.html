@@ -415,6 +415,27 @@
             background: #4a4a4a;
         }
  
+        .detail-field .delete-field-btn {
+            display: none; /* Hidden by default */
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        .detail-field:hover .delete-field-btn { display: inline; } /* Show on hover */
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .action-buttons { text-align: right; margin-top: 20px; }
+
         @media (max-width: 768px) {
             .navbar {
                 flex-direction: column;
@@ -456,43 +477,19 @@
 </head>
 <body>
     <div class="dashboard active">
-        <nav class="navbar">
-            <h1><a href="index.html" style="color:white; text-decoration: none;">Bright Pitch</a></h1>
-            <div class="nav-links">
-                <a href="upskill.html">🎯 Upskilling</a>
-                <a href="company.html" class="active">🏢 Company</a>
-                <a href="finance.html">💰 Finance</a>
-                <a href="college.html">🎓 College</a>
-            </div>
-            <select class="company-switcher">
-                <option>Bright Pitch</option>
-                <option>Tech Ventures</option>
-                <option>Creative Solutions</option>
-            </select>
-            <button class="logout-btn">Logout</button>
-        </nav>
 
         <div class="dashboard-content">
+            <a href="company.html" class="back-link">← Back to Company List</a>
             <div class="section">
                 <h2 id="clientNameHeader">Client Details</h2>
                 
-                <div class="subsection">
-                    <div class="detail-field">
-                        <label for="clientName">Client Name</label>
-                        <div id="clientName" contenteditable="true" data-field="name"></div>
-                    </div>
-                    <div class="detail-field">
-                        <label for="clientProject">Project Details</label>
-                        <div id="clientProject" contenteditable="true" data-field="project"></div>
-                    </div>
-                    <div class="detail-field">
-                        <label for="clientBudget">Budget</label>
-                        <div id="clientBudget" contenteditable="true" data-field="budget"></div>
-                    </div>
-                    <div class="detail-field">
-                        <label for="clientContact">Contact Person</label>
-                        <div id="clientContact" contenteditable="true" data-field="contact"></div>
-                    </div>
+                <div class="subsection" id="clientFieldsContainer">
+                    <!-- Dynamic fields will be rendered here by client.js -->
+                </div>
+                <div class="action-buttons">
+                    <button id="addFieldBtn" class="add-btn" style="background-color: #5bc0de;">Add Field</button>
+                    <button id="saveChangesBtn" class="add-btn">Save Changes</button>
+                    <button id="deleteClientBtn" class="delete-btn">Delete Client</button>
                 </div>
             </div>
         </div>

@@ -1,13 +1,6 @@
 let currentVideoTitle = '';
 let currentVideoScript = '';
 
-function logout() {
-    // For now, just alerts. In a real app, this would redirect to a login page.
-    alert('Logged out!');
-    // You might want to redirect to index.html
-    window.location.href = 'index.html';
-}
-
 function openVideoScript(title, script) {
     currentVideoTitle = title;
     currentVideoScript = script;
@@ -22,8 +15,6 @@ function closeVideoScript() {
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
-    document.querySelector('.logout-btn').addEventListener('click', logout);
-
     document.querySelectorAll('.video-card').forEach(card => {
         const title = card.querySelector('strong').textContent;
         const script = card.getAttribute('data-script');

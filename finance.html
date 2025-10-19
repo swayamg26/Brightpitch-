@@ -84,67 +84,6 @@
             display: block;
         }
 
-        .navbar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .navbar h1 {
-            font-size: 1.8em;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 15px;
-            flex-grow: 1;
-            justify-content: center;
-        }
-
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            padding: 8px 15px;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
-
-        .nav-links a:hover, .nav-links a.active {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .company-switcher {
-            padding: 8px 15px;
-            border-radius: 5px;
-            border: 2px solid white;
-            background: transparent;
-            color: white;
-            font-size: 1em;
-            cursor: pointer;
-        }
-
-        .logout-btn {
-            padding: 10px 25px;
-            background: white;
-            color: #667eea;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .logout-btn:hover {
-            transform: scale(1.05);
-        }
-
         .dashboard-content {
             padding: 30px;
             max-width: 1400px;
@@ -465,6 +404,53 @@
             color: #666;
         }
 
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .accordion-toggle {
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .accordion-toggle .arrow {
+            transition: transform 0.3s ease;
+            border: solid #e0e0e0;
+            border-width: 0 3px 3px 0;
+            display: inline-block;
+            padding: 4px;
+            transform: rotate(45deg);
+            -webkit-transform: rotate(45deg);
+        }
+
+        .accordion-toggle.active .arrow {
+            transform: rotate(-135deg);
+            -webkit-transform: rotate(-135deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+            padding-top: 20px; /* Add some space when opened */
+        }
+
+        .accordion-content.active {
+            max-height: 1000px; /* Adjust as needed for chart height */
+        }
+
+
         @media (max-width: 768px) {
             .navbar {
                 flex-direction: column;
@@ -509,43 +495,50 @@
             .payment-grid {
                 grid-template-columns: 1fr;
             }
+
+            #currentDateDisplay {
+                font-size: 1em;
+                text-align: center;
+            }
         }
     </style>
 </head>
 <body>
     <!-- Owner Dashboard -->
     <div class="dashboard active" id="ownerDashboard">
-        <nav class="navbar">
-            <h1><a href="index.html" style="color:white; text-decoration: none;">Bright Pitch</a></h1>
-            <div class="nav-links">
-                <a href="upskill.html">🎯 Upskilling</a>
-                <a href="company.html">🏢 Company</a>
-                <a href="finance.html" class="active">💰 Finance</a>
-                <a href="college.html">🎓 College</a>
-                <a href="learnapart.html">📚 Learn</a>
-            </div>
-            <select class="company-switcher">
-                <option>Bright Pitch</option>
-                <option>Tech Ventures</option>
-                <option>Creative Solutions</option>
-            </select>
-            <button class="logout-btn">Logout</button>
-        </nav>
-
         <div class="dashboard-content">
             <!-- 3. Financial Analysis -->
+            <a href="index.html" class="back-link">← Back to Home</a>
             <div class="section">
                 <h2>💰 Financial Analysis</h2>
                 
                 <div class="subsection finance-form">
-                    <input type="text" id="entryDescription" placeholder="Description">
-                    <input type="number" id="entryAmount" placeholder="Amount">
-                    <input type="date" id="entryDate">
+                    <input type="text" id="entryDescription" placeholder="Description" style="flex-grow: 2;">
+                    <input type="number" id="entryAmount" placeholder="Amount" style="flex-grow: 1;">
+                    <input type="text" id="entryCategory" placeholder="Category (e.g., Salary, Rent)" style="flex-grow: 1;">
+                    <input type="date" id="entryDate" style="flex-grow: 1;">
                     <select id="entryType">
                         <option value="income">Income</option>
                         <option value="expense">Expense</option>
                     </select>
                     <button id="addEntryBtn" class="add-btn">Add Entry</button>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #2a2a2a; padding: 10px; border-radius: 8px;">
+                    <button id="prevDayBtn" class="edit-btn">‹ Prev Day</button>
+                    <h3 id="currentDateDisplay" style="color: #e0e0e0;"></h3>
+                    <button id="nextDayBtn" class="edit-btn">Next Day ›</button>
+                </div>
+
+                <div class="section">
+                    <div class="accordion-toggle">
+                        <h2>📊 Daily Charts</h2>
+                        <span class="arrow"></span>
+                    </div>
+                    <div class="accordion-content">
+                        <canvas id="incomeExpenseChart" style="margin-bottom: 30px;"></canvas>
+                        <canvas id="expenseCategoryChart"></canvas>
+                    </div>
                 </div>
 
                 <div class="finance-summary">
@@ -602,6 +595,27 @@
         </div>
     </div>
 
+    <!-- Edit Entry Modal -->
+    <div id="editEntryModal" style="display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.8);">
+        <div style="background-color: #2c2c2c; margin: 10% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 500px; border-radius: 10px;">
+            <h2 style="color: #ffa726;">Edit Entry</h2>
+            <input type="hidden" id="editEntryId">
+            <div class="finance-form" style="flex-direction: column;">
+                <input type="text" id="editEntryDescription" placeholder="Description">
+                <input type="number" id="editEntryAmount" placeholder="Amount">
+                <input type="text" id="editEntryCategory" placeholder="Category">
+                <input type="date" id="editEntryDate">
+                <select id="editEntryType">
+                    <option value="income">Income</option>
+                    <option value="expense">Expense</option>
+                </select>
+            </div>
+            <button id="saveEditBtn" class="edit-btn">Save Changes</button>
+            <button id="cancelEditBtn" class="delete-btn" style="background-color: #6c757d;">Cancel</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module" src="finance.js"></script>
 </body>
 </html>
