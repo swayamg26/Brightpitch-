@@ -20,10 +20,8 @@ function addTask() {
             date: date.value,
             completed: false,
         });
-        input.value = '';
-        description.value = '';
-        date.value = '';
-        saveAndRender();
+        localStorage.setItem('upskillTasks', JSON.stringify(tasks));
+        window.location.reload();
     }
 }
 
@@ -34,6 +32,9 @@ function toggleTask(taskId) {
         saveAndRender();
     }
 }
+
+// Make openEditModal globally accessible so calendar.js can call it
+window.openEditModal = openEditModal;
 
 function openEditModal(taskId) {
     const task = tasks.find(t => t.id === taskId);

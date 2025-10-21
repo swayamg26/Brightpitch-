@@ -64,6 +64,9 @@ function loadAssignmentLists() {
     const currentYear = dt.getFullYear();
     const year = currentYear; // for the display string
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Normalize to the start of the day for accurate comparison
+
     document.getElementById('currentMonthDisplay').innerText = `${dt.toLocaleDateString('en-us', { month: 'long' })} ${year}`;
 
     const assignments = events.filter(e => {
@@ -90,11 +93,13 @@ function loadAssignmentLists() {
         // Placeholder for edit functionality
         assignmentItem.querySelector('.edit-btn').addEventListener('click', () => alert('Edit functionality coming soon!'));
 
+        const eventDate = new Date(a.date);
+
         if (a.completed) {
             completedList.appendChild(assignmentItem);
-        } else if (a.status === 'upcoming') {
+        } else if (eventDate > today || a.status === 'upcoming') {
             upcomingList.appendChild(assignmentItem);
-        } else { // 'pending' or other statuses
+        } else if (a.status === 'pending') { // Only show 'pending' status here
             pendingList.appendChild(assignmentItem);
         }
     });

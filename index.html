@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #000000;
+            background: #121212; /* Softer dark background */
             color: #fdf9f9;
             min-height: 100vh;
         }
@@ -22,8 +22,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            background: #000000;
+            min-height: 100vh; 
+            background: #121212;
         }
 
         .selection-screen-content {
@@ -35,6 +35,29 @@
             max-width: 600px;
             width: 100%;
         }
+
+        .login-screen {
+            display: none; /* Hidden by default */
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #121212;
+        }
+
+        .login-content {
+            background: #1e1e1e;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-content h2 { color: #667eea; margin-bottom: 20px; }
+        .login-content input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #555; background-color: #2c2c2c; color: #e0e0e0; font-size: 1em; }
+        .login-content button { width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1.1em; font-weight: 600; }
+        .login-content button:hover { opacity: 0.8; }
 
         .selection-screen-content h1 {
             color: #333;
@@ -110,14 +133,14 @@
         }
 
         .nav-block {
-            background: #1a1a1a;
-            border: 1px solid #222;
+            background: #1e1e1e; /* Darker card background */
+            border: 1px solid #333;
             padding: 40px 20px;
             border-radius: 15px;
             text-decoration: none;
             color: #e0e0e0;
             transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         .nav-block:hover {
@@ -159,9 +182,18 @@
             <h1>Welcome to Bright Pitch</h1>
             <p>Please select your role to continue</p>
             <div class="role-buttons">
-                <button class="role-btn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">Owner</button>
-                <button class="role-btn" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">Employee</button>
+                <button id="ownerBtn" class="role-btn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">Owner</button>
+                <button id="employeeBtn" class="role-btn" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">Employee</button>
             </div>
+        </div>
+    </div>
+    <div class="login-screen" id="loginScreen">
+        <div class="login-content">
+            <h2>Owner Login</h2>
+            <input type="email" id="loginEmail" placeholder="Email" required>
+            <input type="password" id="loginPassword" placeholder="Password" required>
+            <button id="loginBtn">Login</button>
+            <p id="loginError" style="color: #d9534f; margin-top: 15px; height: 20px;"></p>
         </div>
     </div>
     <div class="dashboard" id="dashboard">
@@ -193,63 +225,130 @@
                     </div>
                 </a>
                 <a href="college.html" class="nav-block">
-                    <div class="icon">🎓</div>
+                    <div class="icon">📚</div>
                     <div id="college-content">
                         <h2>College</h2>
                         <p>Organize assignments, exams, and academic progress.</p>
                     </div>
                 </a>
+                <a href="scripts.html" class="nav-block"> <!-- Corrected link -->
+                    <div class="icon">📜</div>
+                    <div id="scripts-content">
+                        <h2>Scripts</h2>
+                        <p>Manage and review content scripts for videos and projects.</p>
+                    </div>
+                </a>
+                <a href="learnapart.html" class="nav-block"> <!-- Corrected link -->
+                    <div class="icon">🎓</div> <!-- Changed icon -->
+                    <div id="learn-content">
+                        <h2>Learn Apart</h2>
+                        <p>Manage college collaborators, events, and learning resources.</p>
+                    </div>
+                </a>
             </div>
         </div>
     </div>
-    <script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+
+    <script type="module">
+        const firebaseConfig = {
+            apiKey: "AIzaSyAawens10WggF4KTK2XtJNq6aTxNG2e2ek",
+            authDomain: "bright-pitch-75038.firebaseapp.com",
+            projectId: "bright-pitch-75038",
+            storageBucket: "bright-pitch-75038.firebasestorage.app",
+            messagingSenderId: "621027462883",
+            appId: "1:621027462883:web:51f9e09c875a03f233ffd6",
+            measurementId: "G-7MS0VXJTQF"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
         document.addEventListener('DOMContentLoaded', () => {
             const selectionScreen = document.getElementById('selectionScreen');
-            const dashboard = document.getElementById('dashboard');            // Check if a role has been selected in this session
-            if (sessionStorage.getItem('roleSelected') === 'true') {
-                selectionScreen.style.display = 'none';
-                dashboard.style.display = 'block';
-            }
+            const loginScreen = document.getElementById('loginScreen');
+            const dashboard = document.getElementById('dashboard');
+            const loginError = document.getElementById('loginError');
 
-            document.querySelectorAll('.role-btn').forEach(button => {
-                button.addEventListener('click', () => {
-                    sessionStorage.setItem('roleSelected', 'true');
+            // --- Auth State Observer ---
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    // User is signed in.
                     selectionScreen.style.display = 'none';
+                    loginScreen.style.display = 'none';
                     dashboard.style.display = 'block';
-                });            });            // Upskilling Progress
-            const upskillTasks = JSON.parse(localStorage.getItem('upskillTasks')) || [];
-            const upskillContent = document.getElementById('upskill-content');
-            if (upskillTasks.length > 0) {
-                const completed = upskillTasks.filter(t => t.completed).length;
-                const total = upskillTasks.length;
-                const percentage = Math.round((completed / total) * 100);
-                upskillContent.innerHTML = `<h2>Upskilling Progress</h2><p style="font-size: 2.5em; font-weight: bold; color: white; margin: 10px 0;">${percentage}%</p><p>${completed} of ${total} tasks completed.</p>`;
-            }
+                    loadDashboardData();
+                } else {
+                    // User is signed out.
+                    selectionScreen.style.display = 'flex';
+                    loginScreen.style.display = 'none';
+                    dashboard.style.display = 'none';
+                }
+            });
 
-            // Company Info
-            const companyContent = document.getElementById('company-content');
-            const clients = JSON.parse(localStorage.getItem('clients')) || [];
-            const teammates = JSON.parse(localStorage.getItem('teammates')) || [];
-            companyContent.innerHTML = `<h2>Company</h2><p style="font-size: 2em; font-weight: bold; color: white; margin: 10px 0;">${clients.length} Clients</p><p>${teammates.length} Teammates</p>`;
+            // --- Event Listeners ---
+            document.getElementById('ownerBtn').addEventListener('click', () => {
+                selectionScreen.style.display = 'none';
+                loginScreen.style.display = 'flex';
+            });
 
-            // Finance Balance
-            const financeEntries = JSON.parse(localStorage.getItem('financeEntries')) || [];
-            const financeContent = document.getElementById('finance-content');
-            if (financeEntries.length > 0) {
-                const income = financeEntries.filter(e => e.type === 'income').reduce((sum, e) => sum + e.amount, 0);
-                const expense = financeEntries.filter(e => e.type === 'expense').reduce((sum, e) => sum + e.amount, 0);
-                const balance = income - expense;
-                financeContent.innerHTML = `<h2>Current Balance</h2><p style="font-size: 2em; font-weight: bold; color: ${balance >= 0 ? '#5cb85c' : '#d9534f'}; margin: 10px 0;">$${balance.toFixed(2)}</p><p>Track income and expenses.</p>`;
-            }
+            document.getElementById('employeeBtn').addEventListener('click', () => {
+                alert('Employee dashboard coming soon!');
+            });
 
-            // College Assignments
-            const collegeEvents = JSON.parse(localStorage.getItem('events')) || [];
-            const collegeContent = document.getElementById('college-content');
-            if (collegeEvents.length > 0) {
-                const pendingAssignments = collegeEvents.filter(e => e.status === 'pending').length;
-                collegeContent.innerHTML = `<h2>College</h2><p style="font-size: 2.5em; font-weight: bold; color: white; margin: 10px 0;">${pendingAssignments}</p><p>Pending Assignment${pendingAssignments !== 1 ? 's' : ''}.</p>`;
+            document.getElementById('loginBtn').addEventListener('click', () => {
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                loginError.textContent = ''; // Clear previous errors
+
+                auth.signInWithEmailAndPassword(email, password)
+                    .catch(error => {
+                        console.error("Firebase Login Error:", error);
+                        loginError.textContent = error.message;
+                    });
+            });
+
+            // This function loads dynamic data into the dashboard blocks
+            function loadDashboardData() {
+                dashboard.style.display = 'block';
+                // Upskilling Progress
+                const upskillTasks = JSON.parse(localStorage.getItem('upskillTasks')) || [];
+                const upskillContent = document.getElementById('upskill-content');
+                if (upskillTasks.length > 0) {
+                    const completed = upskillTasks.filter(t => t.completed).length;
+                    const total = upskillTasks.length;
+                    const percentage = Math.round((completed / total) * 100);
+                    upskillContent.innerHTML = `<h2>Upskilling Progress</h2><p style="font-size: 2.5em; font-weight: bold; color: white; margin: 10px 0;">${percentage}%</p><p>${completed} of ${total} tasks completed.</p>`;
+                }
+
+                // Company Info
+                const companyContent = document.getElementById('company-content');
+                const clients = JSON.parse(localStorage.getItem('clients')) || [];
+                const teammates = JSON.parse(localStorage.getItem('teammates')) || [];
+                companyContent.innerHTML = `<h2>Company</h2><p style="font-size: 2em; font-weight: bold; color: white; margin: 10px 0;">${clients.length} Clients</p><p>${teammates.length} Teammates</p>`;
+
+                // Finance Balance
+                const financeEntries = JSON.parse(localStorage.getItem('financeEntries')) || [];
+                const financeContent = document.getElementById('finance-content');
+                if (financeEntries.length > 0) {
+                    const income = financeEntries.filter(e => e.type === 'income').reduce((sum, e) => sum + e.amount, 0);
+                    const expense = financeEntries.filter(e => e.type === 'expense').reduce((sum, e) => sum + e.amount, 0);
+                    const balance = income - expense;
+                    financeContent.innerHTML = `<h2>Current Balance</h2><p style="font-size: 2em; font-weight: bold; color: ${balance >= 0 ? '#5cb85c' : '#d9534f'}; margin: 10px 0;">$${balance.toFixed(2)}</p><p>Track income and expenses.</p>`;
+                }
+
+                // College Assignments
+                const collegeEvents = JSON.parse(localStorage.getItem('events')) || [];
+                const collegeContent = document.getElementById('college-content');
+                if (collegeEvents.length > 0) {
+                    const pendingAssignments = collegeEvents.filter(e => e.status === 'pending').length;
+                    collegeContent.innerHTML = `<h2>College</h2><p style="font-size: 2.5em; font-weight: bold; color: white; margin: 10px 0;">${pendingAssignments}</p><p>Pending Assignment${pendingAssignments !== 1 ? 's' : ''}.</p>`;
+                }
             }
         });
     </script>
+    <script type="module" src="Index.js"></script>
 </body>
 </html>

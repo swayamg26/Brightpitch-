@@ -90,14 +90,22 @@ function load() {
                 eventsContainer.className = 'calendar-events';
                 tasksForDay.forEach(task => {
                     const eventIndicator = document.createElement('div');
+                    // Determine status for color-coding. If task.completed is true, status is 'completed'.
+                    const taskStatus = task.completed ? 'completed' : (task.status || 'pending');
+
                     eventIndicator.className = 'event-indicator';
-                    eventIndicator.setAttribute('data-status', task.status || 'pending');
+                    eventIndicator.setAttribute('data-status', taskStatus);
                     eventIndicator.innerHTML = `
                         <span class="event-title">${task.text}</span><div class="event-popup">
                             <strong>${task.text}</strong>
                             <p>${task.description || 'No description.'}</p>
                         </div>
                     `;
+                    // Add a click listener to the event indicator itself to open the edit modal
+                    eventIndicator.addEventListener('click', (e) => {
+                        e.stopPropagation(); // Prevent the day's click event from firing
+                        if (window.openEditModal) window.openEditModal(task.id);
+                    });
                     eventsContainer.appendChild(eventIndicator);
                 });
                 daySquare.appendChild(eventsContainer);

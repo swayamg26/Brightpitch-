@@ -2,8 +2,8 @@ let entries = localStorage.getItem('financeEntries') ? JSON.parse(localStorage.g
 let clientPayments = localStorage.getItem('clientPayments') ? JSON.parse(localStorage.getItem('clientPayments')) : [];
 
 let currentDayNav = 0; // 0 for current day, -1 for yesterday, 1 for tomorrow, etc.
-let incomeExpenseChart = null;
-let expenseCategoryChart = null;
+let financePieChart = null;
+let currentChartType = 'income'; // 'income' or 'expense'
 
 function renderAll() {
     const dt = new Date();
@@ -80,57 +80,64 @@ function renderEntries(dailyEntries) {
 }
 
 function renderCharts(dailyEntries) {
-    const incomeData = dailyEntries.filter(e => e.type === 'income').reduce((sum, e) => sum + parseFloat(e.amount), 0);
-    const expenseData = dailyEntries.filter(e => e.type === 'expense').reduce((sum, e) => sum + parseFloat(e.amount), 0);
+    let chartData, chartTitle, chartColors;
 
-    const incomeExpenseCtx = document.getElementById('incomeExpenseChart').getContext('2d');
-    if (incomeExpenseChart) {
-        incomeExpenseChart.destroy();
+    if (currentChartType === 'income') {
+        const incomeCategories = dailyEntries
+            .filter(e => e.type === 'income')
+            .reduce((acc, e) => {
+                const category = e.category || 'Uncategorized';
+                acc[category] = (acc[category] || 0) + parseFloat(e.amount);
+                return acc;
+            }, {});
+        chartData = incomeCategories;
+        chartTitle = 'Income by Category';
+        chartColors = ['rgba(75, 192, 192, 0.6)', 'rgba(92, 184, 92, 0.6)', 'rgba(54, 162, 235, 0.6)', 'rgba(255, 206, 86, 0.6)', 'rgba(153, 102, 255, 0.6)'];
+    } else { // 'expense'
+        const expenseCategories = dailyEntries
+            .filter(e => e.type === 'expense')
+            .reduce((acc, e) => {
+                const category = e.category || 'Uncategorized';
+                acc[category] = (acc[category] || 0) + parseFloat(e.amount);
+                return acc;
+            }, {});
+        chartData = expenseCategories;
+        chartTitle = 'Expenses by Category';
+        chartColors = ['rgba(255, 99, 132, 0.6)', 'rgba(255, 159, 64, 0.6)', 'rgba(255, 206, 86, 0.6)', 'rgba(75, 192, 192, 0.6)', 'rgba(153, 102, 255, 0.6)'];
     }
-    incomeExpenseChart = new Chart(incomeExpenseCtx, {
-        type: 'bar',
-        data: {
-            labels: ['Income', 'Expenses'],
-            datasets: [{
-                label: 'Amount ($)',
-                data: [incomeData, expenseData],
-                backgroundColor: ['rgba(92, 184, 92, 0.6)', 'rgba(217, 83, 79, 0.6)'],
-                borderColor: ['#5cb85c', '#d9534f'],
-                borderWidth: 1
-            }]
-        },
-        options: { scales: { y: { beginAtZero: true } } }
-    });
 
-    const expenseCategories = dailyEntries
-        .filter(e => e.type === 'expense')
-        .reduce((acc, e) => {
-            const category = e.category || 'Uncategorized';
-            acc[category] = (acc[category] || 0) + parseFloat(e.amount);
-            return acc;
-        }, {});
-
-    const expenseCategoryCtx = document.getElementById('expenseCategoryChart').getContext('2d');
-    if (expenseCategoryChart) {
-        expenseCategoryChart.destroy();
+    const chartCtx = document.getElementById('financePieChart').getContext('2d');
+    if (financePieChart) {
+        financePieChart.destroy();
     }
-    expenseCategoryChart = new Chart(expenseCategoryCtx, {
-        type: 'doughnut',
+
+    financePieChart = new Chart(chartCtx, {
+        type: 'pie',
         data: {
-            labels: Object.keys(expenseCategories),
+            labels: Object.keys(chartData),
             datasets: [{
-                label: 'Expenses by Category',
-                data: Object.values(expenseCategories),
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.6)',
-                    'rgba(54, 162, 235, 0.6)',
-                    'rgba(255, 206, 86, 0.6)',
-                    'rgba(75, 192, 192, 0.6)',
-                    'rgba(153, 102, 255, 0.6)',
-                    'rgba(255, 159, 64, 0.6)'
-                ],
+                label: chartTitle,
+                data: Object.values(chartData),
+                backgroundColor: chartColors,
                 hoverOffset: 4
             }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: chartTitle,
+                    color: '#e0e0e0',
+                    font: { size: 16 }
+                },
+                legend: {
+                    labels: {
+                        color: '#e0e0e0' // Set legend text color
+                    }
+                }
+            }
         }
     });
 }
@@ -296,6 +303,7 @@ function addPayment() {
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('finance.js loaded and DOMContentLoaded fired.');
     document.getElementById('addEntryBtn').addEventListener('click', addEntry);
     document.getElementById('prevDayBtn').addEventListener('click', () => {
         currentDayNav--;
@@ -304,6 +312,20 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('nextDayBtn').addEventListener('click', () => {
         currentDayNav++;
         renderAll();
+    });
+
+    document.getElementById('showIncomeChartBtn').addEventListener('click', () => {
+        currentChartType = 'income';
+        document.getElementById('showIncomeChartBtn').classList.add('active');
+        document.getElementById('showExpenseChartBtn').classList.remove('active');
+        renderAll(); // Re-render everything to update the chart
+    });
+
+    document.getElementById('showExpenseChartBtn').addEventListener('click', () => {
+        currentChartType = 'expense';
+        document.getElementById('showIncomeChartBtn').classList.remove('active');
+        document.getElementById('showExpenseChartBtn').classList.add('active');
+        renderAll(); // Re-render everything to update the chart
     });
 
     document.querySelector('.accordion-toggle').addEventListener('click', (e) => {
